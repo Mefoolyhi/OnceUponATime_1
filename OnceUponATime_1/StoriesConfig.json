@@ -1,0 +1,2 @@
+﻿{"Stories": 
+[{"Name": "Test", "seasons": [1], "Hero": {"Name": "Ann", "MainLover": "Olivia", "maxSympathy": 4, "Sympathies": {"Tom" : 2, "Olivia": 4, "Jake": -5}}, "currentSeason": 0, "currentSeries": 0}]}

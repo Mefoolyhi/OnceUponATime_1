@@ -2,7 +2,7 @@
 {
     public class Phrase
     {
-        public Person Person { get; }
+        public string Person { get; }
         public string Text { get; }
     }
 }

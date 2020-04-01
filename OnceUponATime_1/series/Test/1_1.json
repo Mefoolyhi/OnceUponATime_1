@@ -1,0 +1,9 @@
+﻿{
+    "Scenes": [
+      { "Dialogues": [{"Person": "Jake", "Text": "Hi!"}, {"Person": "Tom", "Text": "Hello!"}, {"Person": "Olivia", "Text": "Bonsoir!"}], "SceneType": "General", "Background": "images/Test/background.png"},
+      {"SceneType": "Choice", "Background":  "images/Test/background.png", "Dialogues": [{"Person": "", "Text": "Выбрать Тома"}, {"Person":  "", "Text":  "Выбрать Оливию"}, {"Person":  "", "Text":  "Выбрать Джейка"}]},
+      {"Dialogues":  [{"Person": "Jake", "Text": "Hi!"}, {"Person": "Tom", "Text": "Hello!"}], "SceneType": "Love", "Background":  "images/Test/background.png"},
+      {"Dialogues":  [], "SceneType": "Logic", "Background":  "images/Test/background.png"},
+      {"Dialogues":  [], "SceneType": "Intuitional", "Background":  "images/Test/background.png"}
+    ]
+}

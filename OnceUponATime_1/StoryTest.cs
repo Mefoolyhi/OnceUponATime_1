@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -8,20 +10,36 @@ namespace OnceUponATime_1
     [TestFixture]
     public class StoryTest
     {
-        [Test]
-        public void JsonParserSeriesTest()
+        private MainHero GetMH()
         {
-            var jp = new JsonParser(
-                @"C:\Users\Елена\RiderProjects\OnceUponATime_1\OnceUponATime_1"); //TODO Вставьте свою корневую директорию
-            jp.SetFilename("series/Test/1.json");
-            var series = jp.GetNext();
-            series.Story.Should().Be("Test");
-            series.Season.Should().Be(1);
-            series.SeriesNumber.Should().Be(1);
-            series.Filename.Should().Be("series/Test/TestParse.json");
-            series.Persons[0].Should().BeEquivalentTo(new Person("Jake", "images/Test/Jake.png"));
-            series.Persons[1].Should().BeEquivalentTo(new Person("Tom", "images/Test/Tom.png"));
-            series.Persons[2].Should().BeEquivalentTo(new Person("Olivia", "images/Test/Olivia.png"));
+            var hero = new MainHero("Ann");
+            hero.SetSympathies( new Dictionary<string, int> {{"Tom", 2},{"Olivia", 4}, {"Jake", -5}});
+            return hero;
+        }
+
+        [Test]
+        public void TestMainHeroSetSymp()
+        {
+            var hero = GetMH();
+            hero.Name.Should().Be("Ann");
+            hero.MainLover.Should().Be("Olivia");
+            hero.Sympathies["Olivia"].Should().Be(4);
+            hero.Sympathies["Tom"].Should().Be(2);
+            hero.Sympathies["Jake"].Should().Be(-5);
+        }
+        
+        [Test]
+        public void TestJsonParserGetStories()
+        {
+            var jp = new JsonParser(); 
+            jp.SetFilename("StoriesConfig.json");
+            var list = jp.GetStories();
+            list.Count.Should().Be(1);
+            var hero = GetMH();
+            var story = new Story("Test", new List<int> {1}, hero);
+            story.SetSeries(1, 1);
+            list[0].Should().BeEquivalentTo(story);
+            
         }
     }
 }
