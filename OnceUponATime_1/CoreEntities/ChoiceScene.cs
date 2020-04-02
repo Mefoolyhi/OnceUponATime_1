@@ -2,12 +2,11 @@
 
 namespace OnceUponATime_1
 {
-    public class ChoiceScene : IScene
+    public interface ChoiceScene
     {
-        public string Background { get; }
-        public string Hero { get; }
-        public List<Choice> Choices { get; }
-        
+        string Background { get; }
+        string Hero { get; }
+        List<Choice> Choices { get; }
         
     }
 }

@@ -2,10 +2,10 @@
 
 namespace OnceUponATime_1
 {
-    public class TalkingScene : IScene
+    public interface TalkingScene
     {
-        public List<Phrase> Dialogues { get; }
-        public SceneType SceneType { get; }
-        public string Background { get; }
+         List<Phrase> Dialogues { get; }
+         SceneType SceneType { get; }
+         string Background { get; }
     }
 }

@@ -1,2 +1,2 @@
-﻿{"Stories": 
-[{"Name": "Test", "seasons": [1], "Hero": {"Name": "Ann", "MainLover": "Olivia", "maxSympathy": 4, "Sympathies": {"Tom" : 2, "Olivia": 4, "Jake": -5}}, "currentSeason": 0, "currentSeries": 0}]}
+﻿{"SList":
+[{"Name": "Test", "seasons": [1], "Hero": {"Name": "MainHero", "Logic": 0, "Intuition": 0, "MainLover": "Olivia", "maxSympathy": 10, "Sympathies": {"Tom" : 2, "Olivia": 10, "Jake": -5}}, "currentSeason": -1, "currentSeries": -1}]}

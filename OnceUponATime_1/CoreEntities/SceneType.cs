@@ -2,6 +2,7 @@
 {
     public enum SceneType
     {
+        None,
         General,
         Logic,
         Intuitional,

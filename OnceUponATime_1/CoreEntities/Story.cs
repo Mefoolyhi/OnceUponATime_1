@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -7,53 +6,58 @@ namespace OnceUponATime_1
 {
     public class Story
     {
+        
         public readonly string Name;
         public readonly MainHero Hero;
         [JsonProperty("seasons")]
         private List<int> _seasons;
-        [JsonProperty("currentSeason")]
-        private int _currentSeason;
-        [JsonProperty("currentSeries")]
-        private int _currentSeries;
         
-        public Story(string name, List<int> seasons, MainHero hero, int currentSeason = 0, int currentSeries = 0)
+        //последняя ПРОЙДЕННАЯ серия
+        [JsonProperty("currentSeason")]
+        public int CurrentSeason { get; private set; }
+        [JsonProperty("currentSeries")]
+        public int CurrentSeries { get; private set; }
+        
+        public Story(string name, List<int> seasons, MainHero hero, int currentSeason = -1, int currentSeries = -1)
         {
             Name = name;
             _seasons = seasons;
             Hero = hero;
-            _currentSeason = currentSeason;
-            _currentSeries = currentSeries;
+            CurrentSeason = currentSeason;
+            CurrentSeries = currentSeries;
         }
         
-        public void SetSeries(int seasonNumber, int seriesNumber = 0)
+        public void SetSeries(int seasonNumber, int seriesNumber = -1)
         {
-            if (seasonNumber < 1 || seasonNumber > _seasons.Count)
+            if (seasonNumber < 0 || seasonNumber >= _seasons.Count)
                 throw new InvalidDataException();
-            if (seriesNumber < 1 || seriesNumber > _seasons[seasonNumber])
+            if (seriesNumber < -1 || seriesNumber >= _seasons[seasonNumber])
                 throw new InvalidDataException();
-            _currentSeason = seasonNumber;
-            _currentSeries = seriesNumber;
+            CurrentSeason = seasonNumber;
+            CurrentSeries = seriesNumber;
         }
+
+        public void RollbackSeries() => CurrentSeries--;
         
         public string GetNextSeries()
         {
-            if (_currentSeason == 0)
+            if (CurrentSeason == -1)
             {
-                _currentSeason = 1;
-                _currentSeries = 1;
+                CurrentSeason = 0;
+                CurrentSeries = 0;
             }
-            else if (_currentSeries >= _seasons[_currentSeason - 1])
-                if (_seasons.Count <= _currentSeason)
+            else if (CurrentSeries + 1 >= _seasons[CurrentSeason])
+                if (_seasons.Count <= CurrentSeason + 1)
                     return null;
                 else
                 {
-                    _currentSeason++;
-                    _currentSeries = 1;
+                    CurrentSeason++;
+                    CurrentSeries = 0;
                 }
             else
-                _currentSeries++;
+                CurrentSeries++;
 
-            return $@"\series\{GameLogic.StoryName}\{_currentSeason}_{_currentSeries}.json";
+            return $@"\series\{GameLogic.StoryName}\{(CurrentSeason + 1)}_{(CurrentSeries + 1)}.json";
         }
     }
 }
