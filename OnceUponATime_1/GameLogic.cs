@@ -6,6 +6,7 @@ namespace OnceUponATime_1
 {
     public class GameLogic
     {
+        public event NotifyParent Stop;    
         public static string StoryName;
         private readonly Story _story;
         private readonly JsonParser<Scene> _jp;
@@ -19,44 +20,53 @@ namespace OnceUponATime_1
             _story = story;
             StoryName = story.Name;
             _jp = new JsonParser<Scene>();
-            if (_story.CurrentSeason != -1) return;
-            Console.WriteLine("Введите имя и нажмите enter");
-            _story.Hero.Name = Console.ReadLine();
         }
 
         private void Menu()
         {
             Console.WriteLine("e - exit, c - continue, r - replay");
             var ans = Console.ReadLine();
-            if (ans != null && ans.Equals("r"))
-            {
-                _story.RollbackSeries();
-                //запустить поток заново
-            }
-
-            if (ans == null || !ans.Equals("e")) return;
+            if (ans == null || (!ans.Equals("e") && !ans.Equals("r"))) return;
             _story.RollbackSeries();
             if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
                 _story.Hero.Name = "MainHero";
-            //остановить поток
+            Stop(ans.Equals("r") ? "restart" : "kill me");
         }
 
+        private string DecodeName(string name)
+        {
+            var person = name;
+            if (person.Equals("MainHero"))
+                person = _story.Hero.Name;
+            if (person.Equals("MainLover"))
+                person = _story.Hero.MainLover;
+            return person;
+        }
+        
         private void PlayScene(TalkingScene s)
         {
             var cheated = false;
+            switch (s.SceneType)
+            {
+                case SceneType.Logic:
+                    Console.WriteLine("Path of Logic");
+                    break;
+                case SceneType.Intuitional:
+                    Console.WriteLine("Path of Intuition");
+                    break;
+            }
+
             foreach (var phrase in s.Dialogues)
             {
-                var person = phrase.Person;
-                if (string.IsNullOrEmpty(person))
+                if (string.IsNullOrEmpty(phrase.Person))
                     Console.WriteLine(phrase.Text);
                 else
                 {
-                    if (person.Equals("MainHero"))
-                        person = _story.Hero.Name;
-                    if (person.Equals("MainLover"))
-                        person = _story.Hero.MainLover;
+                    var person = DecodeName(phrase.Person);
                     Console.WriteLine($@"{person}: ""{phrase.Text}""");
-                    if (s.SceneType == SceneType.Love && person.Equals(phrase.Person) &&
+                    if (s.SceneType == SceneType.Love && 
+                        !person.Equals(_story.Hero.Name) &&
+                        !person.Equals(_story.Hero.MainLover) &&
                         _story.Hero.MaxSympathy >= 10)
                         cheated = true;
                 }
@@ -76,11 +86,18 @@ namespace OnceUponATime_1
             Console.WriteLine($@"Diamonds: {_diamondDelta}"); //алмазы написать
             _story.Hero.SetLogicIntuition(_logicDelta, _intuitionDelta);
             //накинуть алмазов за прохождение
+            Stop("ended");
 
         }
         
         public void ProcessSerie()
         {
+            if (_story.CurrentSeason == -1 ||
+                (_story.CurrentSeason == 0 && _story.CurrentSeries == -1))
+            {
+                Console.WriteLine("Введите имя и нажмите enter");
+                _story.Hero.Name = Console.ReadLine();
+            }
             var filename = _story.GetNextSeries();
             if (string.IsNullOrEmpty(filename))
             {
@@ -95,11 +112,7 @@ namespace OnceUponATime_1
                 if (scene.SceneType == SceneType.None)
                 {
                     ChoiceScene s = scene;
-                    var person = s.Hero;
-                    if (person.Equals("MainHero"))
-                        person = _story.Hero.Name;
-                    if (person.Equals("MainLover"))
-                        person = _story.Hero.MainLover;
+                    var person = DecodeName(s.Hero);
                     Console.WriteLine($"{person} : ");
                     foreach (var d in s.Choices.Select(choice => choice.DiamondDelta == 0 ? choice.Text : 
                         string.Join(" ", choice.Text, 
