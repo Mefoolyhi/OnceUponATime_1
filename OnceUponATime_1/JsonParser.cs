@@ -35,10 +35,15 @@ namespace OnceUponATime_1
             return myJsonObject.SList;
         }
 
-        public void Set(string filename, List<T> toThrow)
+        public void SetTs(string filename, List<T> toThrow)
         {
             
-            //File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonSerializer.Serialize<JsonT>(toThrow));
+            File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonConvert.SerializeObject(toThrow));
+        }
+
+        public void SetT(string filename, T toThrow)
+        {
+            File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonConvert.SerializeObject(toThrow));
         }
 
         public T GetOneT() => JsonConvert.DeserializeObject<T>(_streamReader.ReadToEnd());

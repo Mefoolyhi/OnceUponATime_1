@@ -8,6 +8,15 @@ namespace OnceUponATime_1
     static class Program
     {
         public static Player Player;
+
+        private static void End(List<Story> stories)
+        {
+            var jp = new JsonParser<Story>();
+            jp.SetTs("StoriesConfig.json", stories);
+            
+            var pp = new JsonParser<Player>();
+            pp.SetT("GameConfig.json", Player);
+        }
         
         [STAThread]
         public static void Main()
@@ -44,7 +53,10 @@ namespace OnceUponATime_1
                     Console.WriteLine();
                     var s = Console.ReadLine();
                     if (string.IsNullOrEmpty(s))
+                    {
+                        End(stories);
                         break;
+                    }
                     story = stories[int.Parse(s)];
                 }
 
@@ -66,9 +78,7 @@ namespace OnceUponATime_1
                 computing.Start();
                 computing.Join();
             }
-            
-            
-            
+            End(stories);
             /*
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

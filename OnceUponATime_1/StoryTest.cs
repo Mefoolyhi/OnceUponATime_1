@@ -86,8 +86,11 @@ namespace OnceUponATime_1
             var jp = new JsonParser<Story>();
             var story = new Story("Test", new List<int> {1}, GetMH());
             story.SetSeries(0, 0);
-            jp.Set("StoriesConfig.json", new List<Story> {story});
-            jp.Dispose();
+            jp.SetTs("1.json", new List<Story> {story});
+            
+            var pp = new JsonParser<Player>();
+            var player = new Player(20, 2, 2, DateTime.Today);
+            pp.SetT("2.json", player);
         }
 
         [Test]
