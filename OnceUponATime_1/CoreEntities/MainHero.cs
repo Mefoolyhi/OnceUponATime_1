@@ -5,12 +5,22 @@ namespace OnceUponATime_1
 {
     public class MainHero 
     {
+        [JsonProperty("Sympathies")]
         public Dictionary<string, int> Sympathies { get; }
+        
+        [JsonProperty("MainLover")]
         public string MainLover { get; private set; }
+        
         [JsonProperty("maxSympathy")]
         public int MaxSympathy { get; private set; }
+        
+        [JsonProperty("Name")]
         public string Name;
+        
+        [JsonProperty("Logic")]
         public int Logic { get; private set; }
+        
+        [JsonProperty("Intuition")]
         public int Intuition { get; private set; }
         
 

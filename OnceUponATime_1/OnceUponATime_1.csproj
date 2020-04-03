@@ -64,6 +64,7 @@
     <ItemGroup>
         <Compile Include="CoreEntities\Choice.cs" />
         <Compile Include="CoreEntities\ChoiceScene.cs" />
+        <Compile Include="CoreEntities\Player.cs" />
         <Compile Include="CoreEntities\Scene.cs" />
         <Compile Include="CoreEntities\MainHero.cs" />
         <Compile Include="CoreEntities\Phrase.cs" />
@@ -105,6 +106,7 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
+      <Content Include="GameConfig.json" />
       <Content Include="images\Test\Jake.png" />
       <Content Include="images\Test\Olivia.png" />
       <Content Include="images\Test\Tom.png" />

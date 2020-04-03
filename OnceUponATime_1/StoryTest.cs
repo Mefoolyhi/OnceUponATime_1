@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -88,5 +89,44 @@ namespace OnceUponATime_1
             jp.Set("StoriesConfig.json", new List<Story> {story});
             jp.Dispose();
         }
+
+        [Test]
+        public void TestJsonParserGetPlayer()
+        {
+            var jp = new JsonParser<Player>();
+            jp.SetFilename(@"\GameConfig.json");
+            var p = jp.GetOneT();
+            p.Diamonds.Should().Be(15);
+            p.Keys.Should().Be(5);
+            p.TotalDays.Should().Be(0);
+            p.LastVisit.Should().Be(DateTime.Today);
+
+            p.CheckIfFirstVisit().Should().Be(true);
+            p.TotalDays.Should().Be(1);
+            p.LastVisit.Should().Be(DateTime.Today);
+
+        }
+
+        [Test]
+        public void TestPlayerDateTimeSubstract()
+        {
+            var p = new Player(15, 10, 12, DateTime.Today);
+            p.CheckIfFirstVisit().Should().Be(false);
+            p.LastVisit.Should().Be(DateTime.Today);
+            p.TotalDays.Should().Be(12);
+            
+            p = new Player(0, 0, 12, DateTime.Parse("02/04/2020"));
+            p.CheckIfFirstVisit().Should().Be(true);
+            p.LastVisit.Should().Be(DateTime.Today);
+            p.TotalDays.Should().Be(13);
+            
+            
+            p = new Player(0, 0, 12, DateTime.Parse("01/04/2020"));
+            p.CheckIfFirstVisit().Should().Be(true);
+            p.LastVisit.Should().Be(DateTime.Today);
+            p.TotalDays.Should().Be(1);
+
+        }
+        
     }
 }

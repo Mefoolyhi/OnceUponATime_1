@@ -7,6 +7,8 @@ namespace OnceUponATime_1
     public delegate void NotifyParent(string msg);
     static class Program
     {
+        public static Player Player;
+        
         [STAThread]
         public static void Main()
         {
@@ -17,10 +19,18 @@ namespace OnceUponATime_1
             var stories = jp.Get();
             jp.Dispose();
             var replayed = false;
-            var story = new Story("Test", new List<int> {1}, new MainHero("MainHero"));
-            //награда за первое посещение в день: счетчик дней и последний день когда заходили - отдельный файлик
-            //в нем же про ключи и алмазы
-            //варнинг про 10 ключей
+            var story = stories[0];
+            var playerParser = new JsonParser<Player>();
+            playerParser.SetFilename(@"\GameConfig.json");
+            Player = playerParser.GetOneT();
+            if (Player.CheckIfFirstVisit())
+            {
+                Console.WriteLine("Спасибо, что снова с нами");
+                Console.WriteLine("Подарок: 3 ключа и 25 алмазов");
+                Player.SetDiamonds(25);
+                if (!Player.SetKeys(3))
+                    Console.WriteLine("Слишком много ключей. Мы оставили 10");
+            }
             while (true)
             {
                 if (!replayed)
@@ -38,7 +48,11 @@ namespace OnceUponATime_1
                     story = stories[int.Parse(s)];
                 }
 
-                //снять ключ
+                if (!Player.GetKey())
+                {
+                    Console.WriteLine("We don't have any keys!");
+                    continue;
+                }
                 var gl = new GameLogic(story);
                 var computing = new Thread(gl.ProcessSerie);
                 gl.Stop += (msg) =>

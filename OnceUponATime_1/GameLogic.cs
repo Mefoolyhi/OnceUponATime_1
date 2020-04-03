@@ -12,7 +12,6 @@ namespace OnceUponATime_1
         private readonly JsonParser<Scene> _jp;
         private int _logicDelta;
         private int _intuitionDelta;
-        private int _diamondDelta;
 
 
         public GameLogic(Story story)
@@ -83,9 +82,9 @@ namespace OnceUponATime_1
         {
             Console.WriteLine($@"Logic: {_story.Hero.Logic} + {_logicDelta}");
             Console.WriteLine($@"Intuition: {_story.Hero.Intuition} + {_intuitionDelta}");
-            Console.WriteLine($@"Diamonds: {_diamondDelta}"); //алмазы написать
+            Console.WriteLine($@"Diamonds: {Program.Player.Diamonds} + {5}");
             _story.Hero.SetLogicIntuition(_logicDelta, _intuitionDelta);
-            //накинуть алмазов за прохождение
+            Program.Player.SetDiamonds(5);
             Stop("ended");
 
         }
@@ -130,8 +129,17 @@ namespace OnceUponATime_1
                     }
 
                     var c = s.Choices[int.Parse(ans)];
-                    _diamondDelta += c.DiamondDelta;
-                    //снять алмазы
+                    while (!Program.Player.GetDiamonds(c.DiamondDelta))
+                    {
+                        Console.WriteLine("We don't have enough diamonds! Rechoose");
+                        ans = Console.ReadLine();
+                        if (ans != null && ans.Equals("m"))
+                        {
+                            Menu();
+                            ans = Console.ReadLine();
+                        }
+                        c = s.Choices[int.Parse(ans)];
+                    }
                     _logicDelta += c.LogicDelta;
                     _intuitionDelta += c.IntuitionalDelta;
                     _story.Hero.SetSympathies(c.RelationshipDelta);

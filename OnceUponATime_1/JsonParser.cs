@@ -41,6 +41,8 @@ namespace OnceUponATime_1
             //File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonSerializer.Serialize<JsonT>(toThrow));
         }
 
+        public T GetOneT() => JsonConvert.DeserializeObject<T>(_streamReader.ReadToEnd());
+
         public void Dispose()
         {
             _fileStream.Close();
