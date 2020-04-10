@@ -8,9 +8,10 @@ namespace OnceUponATime_1
     {
         
         public readonly string Name;
-        public readonly MainHero Hero;
+        
         [JsonProperty("seasons")]
         private List<int> _seasons;
+        public readonly MainHero Hero;
         
         //последняя ПРОЙДЕННАЯ серия
         [JsonProperty("currentSeason")]

@@ -11,11 +11,13 @@ namespace OnceUponATime_1
 
         private static void End(List<Story> stories)
         {
-            var jp = new JsonParser<Story>();
-            jp.SetTs("StoriesConfig.json", stories);
+            var storyParser = new JsonParser<List<Story>>();
+            storyParser.SetFilenameForWriting(@"\StoriesConfig.json");
+            storyParser.SaveToFile(stories);
             
-            var pp = new JsonParser<Player>();
-            pp.SetT("GameConfig.json", Player);
+            var playerParser = new JsonParser<Player>();
+            playerParser.SetFilenameForWriting(@"\GameConfig.json");
+            playerParser.SaveToFile(Player);
         }
         
         [STAThread]
@@ -23,22 +25,25 @@ namespace OnceUponATime_1
         {
             //properties - app time - console to win0
             Console.WriteLine("Loading...");
-            var jp = new JsonParser<Story>(); 
-            jp.SetFilename(@"\StoriesConfig.json");
-            var stories = jp.Get();
-            jp.Dispose();
+            var storyParser = new JsonParser<List<Story>>(); 
+            storyParser.SetFilenameForReading(@"\StoriesConfig.json");
+            var stories = storyParser.GetObject();
+            storyParser.Dispose();
             var replayed = false;
             var story = stories[0];
             var playerParser = new JsonParser<Player>();
-            playerParser.SetFilename(@"\GameConfig.json");
-            Player = playerParser.GetOneT();
-            if (Player.CheckIfFirstVisit())
+            playerParser.SetFilenameForReading(@"\GameConfig.json");
+            Player = playerParser.GetObject();
+            playerParser.Dispose();
+            if (Player.TryUpdateLastVisitAndDaysCountRecords())
             {
                 Console.WriteLine("Спасибо, что снова с нами");
                 Console.WriteLine("Подарок: 3 ключа и 25 алмазов");
-                Player.SetDiamonds(25);
-                if (!Player.SetKeys(3))
+                Player.AddDiamonds(25);
+                Console.WriteLine($"Теперь алмазов {Player.Diamonds}");
+                if (!Player.TrySetKeys(3))
                     Console.WriteLine("Слишком много ключей. Мы оставили 10");
+                Console.WriteLine($"И ключей {Player.Keys}");
             }
             while (true)
             {
@@ -51,28 +56,26 @@ namespace OnceUponATime_1
                     }
 
                     Console.WriteLine();
-                    var s = Console.ReadLine();
-                    if (string.IsNullOrEmpty(s))
+                    var ans = Console.ReadLine();
+                    if (string.IsNullOrEmpty(ans))
                     {
                         End(stories);
                         break;
                     }
-                    story = stories[int.Parse(s)];
+                    story = stories[int.Parse(ans)];
                 }
 
-                if (!Player.GetKey())
+                if (!Player.TryDecreaseKeys())
                 {
                     Console.WriteLine("We don't have any keys!");
                     continue;
                 }
+                Console.WriteLine($"И ключей {Player.Keys}");
                 var gl = new GameLogic(story);
                 var computing = new Thread(gl.ProcessSerie);
                 gl.Stop += (msg) =>
                 {
-                    if (msg.Equals("restart"))
-                        replayed = true;
-                    if (msg.Equals("ended"))
-                        replayed = false;
+                    replayed = msg.Equals("restart");
                     computing.Abort();
                 };
                 computing.Start();

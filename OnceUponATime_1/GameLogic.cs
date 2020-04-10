@@ -9,7 +9,7 @@ namespace OnceUponATime_1
         public event NotifyParent Stop;    
         public static string StoryName;
         private readonly Story _story;
-        private readonly JsonParser<Scene> _jp;
+        private readonly JsonParser<List<Scene>> _scenesParser;
         private int _logicDelta;
         private int _intuitionDelta;
 
@@ -18,7 +18,7 @@ namespace OnceUponATime_1
         {
             _story = story;
             StoryName = story.Name;
-            _jp = new JsonParser<Scene>();
+            _scenesParser = new JsonParser<List<Scene>>();
         }
 
         private void Menu()
@@ -42,10 +42,10 @@ namespace OnceUponATime_1
             return person;
         }
         
-        private void PlayScene(TalkingScene s)
+        private void PlayScene(ITalkingScene scene)
         {
             var cheated = false;
-            switch (s.SceneType)
+            switch (scene.SceneType)
             {
                 case SceneType.Logic:
                     Console.WriteLine("Path of Logic");
@@ -55,7 +55,7 @@ namespace OnceUponATime_1
                     break;
             }
 
-            foreach (var phrase in s.Dialogues)
+            foreach (var phrase in scene.Dialogues)
             {
                 if (string.IsNullOrEmpty(phrase.Person))
                     Console.WriteLine(phrase.Text);
@@ -63,7 +63,7 @@ namespace OnceUponATime_1
                 {
                     var person = DecodeName(phrase.Person);
                     Console.WriteLine($@"{person}: ""{phrase.Text}""");
-                    if (s.SceneType == SceneType.Love && 
+                    if (scene.SceneType == SceneType.Love && 
                         !person.Equals(_story.Hero.Name) &&
                         !person.Equals(_story.Hero.MainLover) &&
                         _story.Hero.MaxSympathy >= 10)
@@ -84,7 +84,7 @@ namespace OnceUponATime_1
             Console.WriteLine($@"Intuition: {_story.Hero.Intuition} + {_intuitionDelta}");
             Console.WriteLine($@"Diamonds: {Program.Player.Diamonds} + {5}");
             _story.Hero.SetLogicIntuition(_logicDelta, _intuitionDelta);
-            Program.Player.SetDiamonds(5);
+            Program.Player.AddDiamonds(5);
             Stop("ended");
 
         }
@@ -101,23 +101,25 @@ namespace OnceUponATime_1
             if (string.IsNullOrEmpty(filename))
             {
                 Console.WriteLine("Oooops We don't have series");
+                Program.Player.TrySetKeys(1);
                 return;
             }
-            _jp.SetFilename(filename);
-            var scenesList = _jp.Get();
-            _jp.Dispose();
+            _scenesParser.SetFilenameForReading(filename);
+            var scenesList = _scenesParser.GetObject();
+            _scenesParser.Dispose();
             foreach (var scene in scenesList)
             {
                 if (scene.SceneType == SceneType.None)
                 {
-                    ChoiceScene s = scene;
-                    var person = DecodeName(s.Hero);
+                    IChoiceScene currentScene = scene;
+                    var person = DecodeName(currentScene.Hero);
+                    Console.WriteLine($"Алмазов {Program.Player.Diamonds}");
                     Console.WriteLine($"{person} : ");
-                    foreach (var d in s.Choices.Select(choice => choice.DiamondDelta == 0 ? choice.Text : 
+                    foreach (var optionSqueeze in currentScene.Choices.Select(choice => choice.DiamondDelta == 0 ? choice.Text : 
                         string.Join(" ", choice.Text, 
                             Math.Abs(choice.DiamondDelta).ToString())))
                     {
-                        Console.WriteLine(d);
+                        Console.WriteLine(optionSqueeze);
                     }
                     
                     
@@ -128,8 +130,8 @@ namespace OnceUponATime_1
                         ans = Console.ReadLine();
                     }
 
-                    var c = s.Choices[int.Parse(ans)];
-                    while (!Program.Player.GetDiamonds(c.DiamondDelta))
+                    var selectedOption = currentScene.Choices[int.Parse(ans)];
+                    while (!Program.Player.TryRemoveDiamonds(selectedOption.DiamondDelta))
                     {
                         Console.WriteLine("We don't have enough diamonds! Rechoose");
                         ans = Console.ReadLine();
@@ -138,18 +140,19 @@ namespace OnceUponATime_1
                             Menu();
                             ans = Console.ReadLine();
                         }
-                        c = s.Choices[int.Parse(ans)];
+                        selectedOption = currentScene.Choices[int.Parse(ans)];
                     }
-                    _logicDelta += c.LogicDelta;
-                    _intuitionDelta += c.IntuitionalDelta;
-                    _story.Hero.SetSympathies(c.RelationshipDelta);
-                    PlayScene(c.NextScene);
+                    Console.WriteLine($"Алмазов {Program.Player.Diamonds}");
+                    _logicDelta += selectedOption.LogicDelta;
+                    _intuitionDelta += selectedOption.IntuitionalDelta;
+                    _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
+                    PlayScene(selectedOption.NextScene);
                 }
                 else
                 {
-                    TalkingScene s = scene;
-                    if ((s.SceneType == SceneType.Logic && _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
-                        (s.SceneType == SceneType.Intuitional && _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta))
+                    ITalkingScene currentScene = scene;
+                    if ((currentScene.SceneType == SceneType.Logic && _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
+                        (currentScene.SceneType == SceneType.Intuitional && _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta))
                         continue;
                     PlayScene(scene);
                 }

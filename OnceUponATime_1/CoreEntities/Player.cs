@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Remoting.Messaging;
 using Newtonsoft.Json;
 
 namespace OnceUponATime_1
@@ -26,7 +25,7 @@ namespace OnceUponATime_1
             LastVisit = lastVisit == default ? DateTime.Today : lastVisit;
         }
 
-        public bool GetKey()
+        public bool TryDecreaseKeys()
         {
             if (Keys <= 0) return false;
             Keys--;
@@ -34,7 +33,7 @@ namespace OnceUponATime_1
 
         }
 
-        public bool SetKeys(int keys)
+        public bool TrySetKeys(int keys)
         {
             if (Keys + keys > 10)
             {
@@ -45,16 +44,16 @@ namespace OnceUponATime_1
             return true;
         }
 
-        public void SetDiamonds(int diamonds) => Diamonds += diamonds;
+        public void AddDiamonds(int diamonds) => Diamonds += diamonds;
         
-        public bool GetDiamonds(int diamonds)
+        public bool TryRemoveDiamonds(int diamonds)
         {
             if (Diamonds - diamonds < 0) return false;
             Diamonds -= diamonds;
             return true;
         }
 
-        public bool CheckIfFirstVisit()
+        public bool TryUpdateLastVisitAndDaysCountRecords()
         {
             if (DateTime.Today.Date == LastVisit.Date && TotalDays > 0)
                 return false;

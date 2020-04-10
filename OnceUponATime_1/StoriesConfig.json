@@ -1,2 +1,1 @@
-﻿{"SList":
-[{"Name": "Test", "seasons": [1], "Hero": {"Name": "MainHero", "Logic": 0, "Intuition": 0, "MainLover": "Olivia", "maxSympathy": 4, "Sympathies": {"Tom" : 2, "Olivia": 4, "Jake": -5}}, "currentSeason": -1, "currentSeries": -1}]}
+﻿[{"Name": "Test", "seasons": [1], "Hero": {"Name": "MainHero", "Logic": 0, "Intuition": 0, "MainLover": "Olivia", "maxSympathy": 4, "Sympathies": {"Tom" : 2, "Olivia": 4, "Jake": -5}}, "currentSeason": -1, "currentSeries": -1}]

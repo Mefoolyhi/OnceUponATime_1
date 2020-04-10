@@ -63,12 +63,12 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="CoreEntities\Choice.cs" />
-        <Compile Include="CoreEntities\ChoiceScene.cs" />
+        <Compile Include="CoreEntities\IChoiceScene.cs" />
         <Compile Include="CoreEntities\Player.cs" />
         <Compile Include="CoreEntities\Scene.cs" />
         <Compile Include="CoreEntities\MainHero.cs" />
         <Compile Include="CoreEntities\Phrase.cs" />
-        <Compile Include="CoreEntities\TalkingScene.cs" />
+        <Compile Include="CoreEntities\ITalkingScene.cs" />
         <Compile Include="CoreEntities\SceneType.cs" />
         <Compile Include="CoreEntities\Story.cs" />
         <Compile Include="Form1.cs">

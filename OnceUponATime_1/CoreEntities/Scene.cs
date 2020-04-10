@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OnceUponATime_1
 {
-    public class Scene :TalkingScene, ChoiceScene
+    public class Scene :ITalkingScene, IChoiceScene
     {
         public List<Phrase> Dialogues { get; }
         public SceneType SceneType { get; }

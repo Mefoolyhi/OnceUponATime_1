@@ -52,9 +52,9 @@ namespace OnceUponATime_1
         [Test]
         public void TestJsonParserGetStories()
         {
-            var jp = new JsonParser<Story>(); 
-            jp.SetFilename(@"\StoriesConfig.json");
-            var list = jp.Get();
+            var jp = new JsonParser<List<Story>>(); 
+            jp.SetFilenameForReading(@"\StoriesConfigTest.json");
+            var list = jp.GetObject();
             list.Count.Should().Be(1);
             var hero = GetMH();
             var story = new Story("Test", new List<int> {1}, hero);
@@ -73,40 +73,82 @@ namespace OnceUponATime_1
         [Test]
         public void TestJsonParserGetIScenes()
         {
-            var jp = new JsonParser<Scene>();
-            jp.SetFilename(@"\series\Test\1_1.json");
-            var list = jp.Get();
+            var jp = new JsonParser<List<Scene>>();
+            jp.SetFilenameForReading(@"\series\Test\1_1.json");
+            var list = jp.GetObject();
             list.Count.Should().Be(4);
+            object[] scenes = {
+                new Scene(new List<Phrase> {new Phrase("Jake", "Hi!"),
+                    new Phrase("Tom", "Hello!"),
+                    new Phrase("", "Bonsoir!")},
+                    "General", "images/Test/background.png",null, null),
+                new Scene(new List<Phrase> {new Phrase("Jake", "Hi!"),
+                        new Phrase("MainHero", "Hello!")},
+                    "Logic", "images/Test/background.png",null, null),
+                new Scene(new List<Phrase> {new Phrase("MainHero", "Hi!"),
+                        new Phrase("Tom", "Would you like to go swimming?")},
+                    "Intuitional", "images/Test/background.png",null, null),
+                new Scene(null, null, "images/Test/background.png","MainHero", 
+                    new List<Choice> { new Choice("Yes", 0, 2, 15,
+                        new Dictionary<string, int> {{"Olivia", -1}, {"Tom", 3}}, 
+                        new Scene(new List<Phrase> {new Phrase("Tom", "Hi!"),
+                                new Phrase("MainHero", "Hello!")},
+                            "Love", "images/Test/background.png",null, null)),
+                        new Choice("No", 2, 0, 0, 
+                            new Dictionary<string, int> {{"MainLover", 3}, {"Olivia", -1}, {"Tom", -1}},
+                            new Scene(new List<Phrase> {new Phrase("MainLover", "Hi!"),
+                                    new Phrase("MainHero", "Hello!")},
+                                "Love", "images/Test/background.png",null, null))
+                    })};
+            list.Should().BeEquivalentTo(scenes);
             jp.Dispose();
         }
 
         [Test]
-        public void TestJsonParserSet()
+        public void TestJsonParserSave()
         {
-            var jp = new JsonParser<Story>();
+            var jp = new JsonParser<List<Story>>();
+            jp.SetFilenameForWriting(@"\1.json");
             var story = new Story("Test", new List<int> {1}, GetMH());
             story.SetSeries(0, 0);
-            jp.SetTs("1.json", new List<Story> {story});
+            jp.SaveToFile(new List<Story> {story});
+            jp.SetFilenameForReading(@"\1.json");
+            var list = jp.GetObject();
+            list.Count.Should().Be(1);
+            list[0].Should().BeEquivalentTo(story);
+            jp.Dispose();
+            
             
             var pp = new JsonParser<Player>();
+            pp.SetFilenameForWriting(@"\2.json");
             var player = new Player(20, 2, 2, DateTime.Today);
-            pp.SetT("2.json", player);
+            pp.SaveToFile(player);
+            pp.SetFilenameForReading(@"\2.json");
+            var p = pp.GetObject();
+            p.Diamonds.Should().Be(player.Diamonds);
+            p.Keys.Should().Be(player.Keys);
+            p.TotalDays.Should().Be(player.TotalDays);
+            p.LastVisit.Should().Be(DateTime.Today);
+            p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(false);
+            p.TotalDays.Should().Be(player.TotalDays);
+            p.LastVisit.Should().Be(DateTime.Today);
+            pp.Dispose();
         }
 
         [Test]
         public void TestJsonParserGetPlayer()
         {
             var jp = new JsonParser<Player>();
-            jp.SetFilename(@"\GameConfig.json");
-            var p = jp.GetOneT();
+            jp.SetFilenameForReading(@"\GameConfigTest.json");
+            var p = jp.GetObject();
             p.Diamonds.Should().Be(15);
             p.Keys.Should().Be(5);
             p.TotalDays.Should().Be(0);
             p.LastVisit.Should().Be(DateTime.Today);
-
-            p.CheckIfFirstVisit().Should().Be(true);
+            p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.TotalDays.Should().Be(1);
             p.LastVisit.Should().Be(DateTime.Today);
+            jp.Dispose();
 
         }
 
@@ -114,18 +156,18 @@ namespace OnceUponATime_1
         public void TestPlayerDateTimeSubstract()
         {
             var p = new Player(15, 10, 12, DateTime.Today);
-            p.CheckIfFirstVisit().Should().Be(false);
+            p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(false);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(12);
             
-            p = new Player(0, 0, 12, DateTime.Parse("02/04/2020"));
-            p.CheckIfFirstVisit().Should().Be(true);
+            p = new Player(0, 0, 12, DateTime.Parse("09/04/2020")); //yesterday
+            p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(13);
             
             
             p = new Player(0, 0, 12, DateTime.Parse("01/04/2020"));
-            p.CheckIfFirstVisit().Should().Be(true);
+            p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(1);
 

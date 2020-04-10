@@ -11,6 +11,7 @@ namespace OnceUponATime_1
     {
         private StreamReader _streamReader;
         private FileStream _fileStream;
+        private string _filename;
         private readonly string _baseDirectory;
 
         public JsonParser()
@@ -18,40 +19,24 @@ namespace OnceUponATime_1
             _baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
         }
 
-        public void SetFilename(string filename)
+        public void SetFilenameForReading(string filename)
         {
             _fileStream = new FileStream(Path.GetFullPath(_baseDirectory + filename), FileMode.Open, FileAccess.Read);
             _streamReader = new StreamReader(_fileStream, Encoding.UTF8);
         }
 
-        [Serializable]
-        class JsonT
-        {    
-           public List<T> SList;
-        }
-        public List<T> Get()
-        {
-            var myJsonObject = JsonConvert.DeserializeObject<JsonT>(_streamReader.ReadToEnd());
-            return myJsonObject.SList;
-        }
-
-        public void SetTs(string filename, List<T> toThrow)
-        {
-            
-            File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonConvert.SerializeObject(toThrow));
-        }
-
-        public void SetT(string filename, T toThrow)
-        {
-            File.WriteAllText(Path.Combine(_baseDirectory,filename), JsonConvert.SerializeObject(toThrow));
-        }
-
-        public T GetOneT() => JsonConvert.DeserializeObject<T>(_streamReader.ReadToEnd());
+        public void SetFilenameForWriting(string filename) => 
+            _filename = filename;
+        
+        public void SaveToFile(T toThrow) =>
+            File.WriteAllText(Path.GetFullPath(_baseDirectory + _filename), JsonConvert.SerializeObject(toThrow));
+        
+        public T GetObject() => JsonConvert.DeserializeObject<T>(_streamReader.ReadToEnd());
 
         public void Dispose()
         {
-            _fileStream.Close();
-            _streamReader.Close();
+            _fileStream.Dispose();
+            _streamReader.Dispose();
         }
     }
 }
