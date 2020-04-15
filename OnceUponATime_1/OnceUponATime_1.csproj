@@ -64,6 +64,7 @@
     <ItemGroup>
         <Compile Include="CoreEntities\Choice.cs" />
         <Compile Include="CoreEntities\IChoiceScene.cs" />
+        <Compile Include="CoreEntities\IScene.cs" />
         <Compile Include="CoreEntities\Player.cs" />
         <Compile Include="CoreEntities\Scene.cs" />
         <Compile Include="CoreEntities\MainHero.cs" />

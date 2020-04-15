@@ -52,14 +52,13 @@ namespace OnceUponATime_1
         [Test]
         public void TestJsonParserGetStories()
         {
-            var jp = new JsonParser<List<Story>>(); 
+            using var jp = new JsonParser<List<Story>>();
             jp.SetFilenameForReading(@"\StoriesConfigTest.json");
             var list = jp.GetObject();
             list.Count.Should().Be(1);
             var hero = GetMH();
             var story = new Story("Test", new List<int> {1}, hero);
             list[0].Should().BeEquivalentTo(story);
-            jp.Dispose();
         }
 
         [Test]
@@ -73,7 +72,7 @@ namespace OnceUponATime_1
         [Test]
         public void TestJsonParserGetIScenes()
         {
-            var jp = new JsonParser<List<Scene>>();
+            using var jp = new JsonParser<List<Scene>>();
             jp.SetFilenameForReading(@"\series\Test\1_1.json");
             var list = jp.GetObject();
             list.Count.Should().Be(4);
@@ -101,13 +100,12 @@ namespace OnceUponATime_1
                                 "Love", "images/Test/background.png",null, null))
                     })};
             list.Should().BeEquivalentTo(scenes);
-            jp.Dispose();
         }
 
         [Test]
         public void TestJsonParserSave()
         {
-            var jp = new JsonParser<List<Story>>();
+            using var jp = new JsonParser<List<Story>>();
             jp.SetFilenameForWriting(@"\1.json");
             var story = new Story("Test", new List<int> {1}, GetMH());
             story.SetSeries(0, 0);
@@ -116,10 +114,9 @@ namespace OnceUponATime_1
             var list = jp.GetObject();
             list.Count.Should().Be(1);
             list[0].Should().BeEquivalentTo(story);
-            jp.Dispose();
             
             
-            var pp = new JsonParser<Player>();
+            using var pp = new JsonParser<Player>();
             pp.SetFilenameForWriting(@"\2.json");
             var player = new Player(20, 2, 2, DateTime.Today);
             pp.SaveToFile(player);
@@ -132,13 +129,12 @@ namespace OnceUponATime_1
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(false);
             p.TotalDays.Should().Be(player.TotalDays);
             p.LastVisit.Should().Be(DateTime.Today);
-            pp.Dispose();
         }
 
         [Test]
         public void TestJsonParserGetPlayer()
         {
-            var jp = new JsonParser<Player>();
+            using var jp = new JsonParser<Player>();
             jp.SetFilenameForReading(@"\GameConfigTest.json");
             var p = jp.GetObject();
             p.Diamonds.Should().Be(15);
@@ -148,8 +144,6 @@ namespace OnceUponATime_1
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.TotalDays.Should().Be(1);
             p.LastVisit.Should().Be(DateTime.Today);
-            jp.Dispose();
-
         }
 
         [Test]
@@ -160,7 +154,7 @@ namespace OnceUponATime_1
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(12);
             
-            p = new Player(0, 0, 12, DateTime.Parse("09/04/2020")); //yesterday
+            p = new Player(0, 0, 12, DateTime.Parse("14/04/2020")); //yesterday
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(13);
@@ -170,7 +164,6 @@ namespace OnceUponATime_1
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(1);
-
         }
         
     }

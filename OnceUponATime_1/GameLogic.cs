@@ -11,6 +11,7 @@ namespace OnceUponATime_1
         private readonly Story _story;
         private readonly JsonParser<List<Scene>> _scenesParser;
         private int _logicDelta;
+        private int _diamondsDelta;
         private int _intuitionDelta;
 
 
@@ -27,6 +28,7 @@ namespace OnceUponATime_1
             var ans = Console.ReadLine();
             if (ans == null || (!ans.Equals("e") && !ans.Equals("r"))) return;
             _story.RollbackSeries();
+            Program.Player.AddDiamonds(_diamondsDelta);
             if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
                 _story.Hero.Name = "MainHero";
             Stop(ans.Equals("r") ? "restart" : "kill me");
@@ -70,7 +72,10 @@ namespace OnceUponATime_1
                         cheated = true;
                 }
                 var ans = Console.ReadLine();
-                if (ans != null && ans.Equals("m"))
+                while (ans == null)
+                    ans = Console.ReadLine();
+                
+                if (ans.Equals("m"))
                     Menu();
             }
             if (!cheated) return;
@@ -83,7 +88,8 @@ namespace OnceUponATime_1
             Console.WriteLine($@"Logic: {_story.Hero.Logic} + {_logicDelta}");
             Console.WriteLine($@"Intuition: {_story.Hero.Intuition} + {_intuitionDelta}");
             Console.WriteLine($@"Diamonds: {Program.Player.Diamonds} + {5}");
-            _story.Hero.SetLogicIntuition(_logicDelta, _intuitionDelta);
+            if (!_story.Hero.TrySetLogicIntuition(_logicDelta, _intuitionDelta))
+                Console.WriteLine("WARNING");
             Program.Player.AddDiamonds(5);
             Stop("ended");
 
@@ -102,11 +108,16 @@ namespace OnceUponATime_1
             {
                 Console.WriteLine("Oooops We don't have series");
                 Program.Player.TrySetKeys(1);
+                Console.WriteLine($"Ключей {Program.Player.Keys}");
                 return;
             }
-            _scenesParser.SetFilenameForReading(filename);
-            var scenesList = _scenesParser.GetObject();
-            _scenesParser.Dispose();
+
+            List<Scene> scenesList;
+            using (_scenesParser)
+            {
+                _scenesParser.SetFilenameForReading(filename);
+                scenesList = _scenesParser.GetObject();
+            }
             foreach (var scene in scenesList)
             {
                 if (scene.SceneType == SceneType.None)
@@ -124,7 +135,9 @@ namespace OnceUponATime_1
                     
                     
                     var ans = Console.ReadLine();
-                    if (ans != null && ans.Equals("m"))
+                    while (ans == null)
+                        ans = Console.ReadLine();
+                    if (ans.Equals("m"))
                     {
                         Menu();
                         ans = Console.ReadLine();
@@ -135,13 +148,17 @@ namespace OnceUponATime_1
                     {
                         Console.WriteLine("We don't have enough diamonds! Rechoose");
                         ans = Console.ReadLine();
-                        if (ans != null && ans.Equals("m"))
+                        while (ans == null)
+                            ans = Console.ReadLine();
+                        if (ans.Equals("m"))
                         {
                             Menu();
                             ans = Console.ReadLine();
                         }
                         selectedOption = currentScene.Choices[int.Parse(ans)];
                     }
+
+                    _diamondsDelta += selectedOption.DiamondDelta;
                     Console.WriteLine($"Алмазов {Program.Player.Diamonds}");
                     _logicDelta += selectedOption.LogicDelta;
                     _intuitionDelta += selectedOption.IntuitionalDelta;

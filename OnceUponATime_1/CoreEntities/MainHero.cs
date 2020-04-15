@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace OnceUponATime_1
@@ -20,31 +19,26 @@ namespace OnceUponATime_1
         
         [JsonProperty("maxSympathy")]
         public int MaxSympathy { get; private set; }
-        
-        private Dictionary<string, int> _sympathies;
+
         [JsonProperty("Sympathies")]
-        public Dictionary<string, int> Sympathies
-        {
-            get => _sympathies.ToDictionary(pair => pair.Key.Clone().ToString(),
-                pair => pair.Value);
-            set => _sympathies = value;
-        }
+        public Dictionary<string, int> Sympathies { get; }
 
         public MainHero(string name, int logic = 0, int intuition = 0, string mainLover = "", int maxSympathy = 0, Dictionary<string, int> symp = null)
         {
             Name = name;
             Logic = logic;
             Intuition = intuition;
-            _sympathies = symp ?? new Dictionary<string, int>();
+            Sympathies = symp ?? new Dictionary<string, int>();
             MaxSympathy = maxSympathy;
             MainLover = mainLover;
         }
 
-        public void SetLogicIntuition(int logic, int intuition)
+        public bool TrySetLogicIntuition(int logic, int intuition)
         {
-            if (logic < Logic || intuition < Intuition) return;
+            if (logic < Logic || intuition < Intuition) return false;
             Logic = logic;
             Intuition = intuition;
+            return true;
         }
         
         public void SetSympathies(Dictionary<string, int> symp)
@@ -56,11 +50,11 @@ namespace OnceUponATime_1
                     continue;
                 if (key.Equals("MainLover"))
                     key = MainLover;
-                if (_sympathies.ContainsKey(key))
-                    _sympathies[key] += pair.Value;
+                if (Sympathies.ContainsKey(key))
+                    Sympathies[key] += pair.Value;
                 else 
-                    _sympathies.Add(key, pair.Value);
-                var value = _sympathies[key];
+                    Sympathies.Add(key, pair.Value);
+                var value = Sympathies[key];
                 if (value <= MaxSympathy) continue;
                 MaxSympathy = value;
                 MainLover = key;
