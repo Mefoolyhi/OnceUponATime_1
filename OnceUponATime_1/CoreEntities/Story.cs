@@ -1,42 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace OnceUponATime_1
 {
     public class Story
     {
-        public readonly string Name;
-        private List<List<string>> _seasons;
-        private int _currentSeason = 0;
-        private int _currentSeries = -1;
         
-        public Story(string name, List<List<string>> seasons)
+        public readonly string Name;
+        
+        [JsonProperty("seasons")]
+        private List<int> _seasons;
+        public readonly MainHero Hero;
+        
+        //последняя ПРОЙДЕННАЯ серия
+        [JsonProperty("currentSeason")]
+        public int CurrentSeason { get; private set; }
+        [JsonProperty("currentSeries")]
+        public int CurrentSeries { get; private set; }
+        
+        public Story(string name, List<int> seasons, MainHero hero, int currentSeason = -1, int currentSeries = -1)
         {
             Name = name;
             _seasons = seasons;
+            Hero = hero;
+            CurrentSeason = currentSeason;
+            CurrentSeries = currentSeries;
         }
-
-        public void AddSeason(List<string> season) => _seasons.Add(season);
-
-        public void SetSeries(int seasonNumber, int seriesNumber = 0)
+        
+        public void SetSeries(int seasonNumber, int seriesNumber = -1)
         {
-            _currentSeason = seasonNumber;
-            _currentSeries = seriesNumber;
+            if (seasonNumber < 0 || seasonNumber >= _seasons.Count)
+                throw new InvalidDataException();
+            if (seriesNumber < -1 || seriesNumber >= _seasons[seasonNumber])
+                throw new InvalidDataException();
+            CurrentSeason = seasonNumber;
+            CurrentSeries = seriesNumber;
         }
+
+        public void RollbackSeries() => CurrentSeries--;
         
         public string GetNextSeries()
         {
-            if (_currentSeries + 1 >= _seasons[_currentSeason].Count)
-                if (_seasons.Count <= _currentSeason + 1)
+            if (CurrentSeason == -1)
+            {
+                CurrentSeason = 0;
+                CurrentSeries = 0;
+            }
+            else if (CurrentSeries + 1 >= _seasons[CurrentSeason])
+                if (_seasons.Count <= CurrentSeason + 1)
                     return null;
                 else
                 {
-                    _currentSeason++;
-                    _currentSeries = 0;
+                    CurrentSeason++;
+                    CurrentSeries = 0;
                 }
             else
-                _currentSeries++;
-            return _seasons[_currentSeason][_currentSeries]; //пока возвращается строка. Допишу парсер, буду кидать серию (??)
+                CurrentSeries++;
+
+            return $@"\series\{GameLogic.StoryName}\{(CurrentSeason + 1)}_{(CurrentSeries + 1)}.json";
         }
     }
 }

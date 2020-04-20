@@ -1,35 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OnceUponATime_1
 {
-    public class JsonParser : IDisposable
+    public class JsonParser<T> : IDisposable
+    where T : class
     {
-        private string Filename;
-        private string BaseDirectory;
+        private StreamReader _streamReader;
+        private FileStream _fileStream;
+        private string _filename;
+        private readonly string _baseDirectory;
 
-        public JsonParser(string baseDirectory) => BaseDirectory = baseDirectory;
-
-        public void SetFilename(string filename)
+        public JsonParser()
         {
-            Filename = filename;
+            _baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
         }
 
-        public Series GetNext()
+        public void SetFilenameForReading(string filename)
         {
-
-            return JsonConvert.DeserializeObject<Series>(File.ReadAllText(Path.Combine(BaseDirectory,Filename)));
-
+            _fileStream = new FileStream(Path.GetFullPath(_baseDirectory + filename), FileMode.Open, FileAccess.Read);
+            _streamReader = new StreamReader(_fileStream, Encoding.UTF8);
         }
+
+        public void SetFilenameForWriting(string filename) => 
+            _filename = filename;
         
+        public void SaveToFile(T toThrow) =>
+            File.WriteAllText(Path.GetFullPath(_baseDirectory + _filename), JsonConvert.SerializeObject(toThrow));
+        
+        public T GetObject() => JsonConvert.DeserializeObject<T>(_streamReader.ReadToEnd());
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _fileStream.Dispose();
+            _streamReader.Dispose();
         }
     }
 }
