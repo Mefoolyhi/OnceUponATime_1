@@ -4,7 +4,6 @@ using System.Threading;
 
 namespace OnceUponATime_1
 {
-    public delegate void NotifyParent(string msg);
     static class Program
     {
         public static Player Player;
@@ -23,7 +22,8 @@ namespace OnceUponATime_1
         [STAThread]
         public static void Main()
         {
-            //properties - app time - console to win0
+            //properties - app time - console to win
+            //без этого формочки не заработают
             Console.WriteLine("Loading...");
             var storyParser = new JsonParser<List<Story>>(); 
             storyParser.SetFilenameForReading(@"\StoriesConfig.json");

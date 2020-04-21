@@ -6,7 +6,7 @@ namespace OnceUponATime_1
 {
     public class GameLogic
     {
-        public event NotifyParent Stop;    
+        public event Action<string> Stop;    
         public static string StoryName;
         private readonly Story _story;
         private readonly JsonParser<List<Scene>> _scenesParser;
