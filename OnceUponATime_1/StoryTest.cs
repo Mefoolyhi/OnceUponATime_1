@@ -90,14 +90,14 @@ namespace OnceUponATime_1
                 new Scene(null, null, "images/Test/background.png","MainHero", 
                     new List<Choice> { new Choice("Yes", 0, 2, 15,
                         new Dictionary<string, int> {{"Olivia", -1}, {"Tom", 3}}, 
-                        new Scene(new List<Phrase> {new Phrase("Tom", "Hi!"),
+                        new List<Scene>{new Scene(new List<Phrase> {new Phrase("Tom", "Hi!"),
                                 new Phrase("MainHero", "Hello!")},
-                            "Love", "images/Test/background.png",null, null)),
+                            "Love", "images/Test/background.png",null, null)}),
                         new Choice("No", 2, 0, 0, 
                             new Dictionary<string, int> {{"MainLover", 3}, {"Olivia", -1}, {"Tom", -1}},
-                            new Scene(new List<Phrase> {new Phrase("MainLover", "Hi!"),
+                            new List<Scene>{ new Scene(new List<Phrase> {new Phrase("MainLover", "Hi!"),
                                     new Phrase("MainHero", "Hello!")},
-                                "Love", "images/Test/background.png",null, null))
+                                "Love", "images/Test/background.png",null, null)})
                     })};
             list.Should().BeEquivalentTo(scenes);
         }
@@ -154,7 +154,7 @@ namespace OnceUponATime_1
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(12);
             
-            p = new Player(0, 0, 12, DateTime.Parse("14/04/2020")); //yesterday
+            p = new Player(0, 0, 12, DateTime.Parse("21/04/2020")); //yesterday
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(13);

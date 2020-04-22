@@ -20,17 +20,17 @@ namespace OnceUponATime_1
         [JsonProperty("RelationShipDelta")]
         public readonly Dictionary<string, int> RelationshipDelta;
         
-        [JsonProperty("NextScene")]
-        public readonly Scene NextScene;
+        [JsonProperty("NextScenes")]
+        public readonly List<Scene> NextScenes;
 
-        public Choice(string text, int dLogic, int dInt, int dDiamond, Dictionary<string, int> dRel, Scene nextScene)
+        public Choice(string text, int dLogic, int dInt, int dDiamond, Dictionary<string, int> dRel, List<Scene> nextScene)
         {
             Text = text;
             RelationshipDelta = dRel;
             DiamondDelta = dDiamond;
             LogicDelta = dLogic;
             IntuitionalDelta = dInt;
-            NextScene = nextScene;
+            NextScenes = nextScene;
         }
     }
 }
