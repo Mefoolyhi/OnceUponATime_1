@@ -163,7 +163,8 @@ namespace OnceUponATime_1
                     _logicDelta += selectedOption.LogicDelta;
                     _intuitionDelta += selectedOption.IntuitionalDelta;
                     _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
-                    PlayScene(selectedOption.NextScene);
+                    foreach (var nextScene in selectedOption.NextScenes)
+                        PlayScene(nextScene);
                 }
                 else
                 {
