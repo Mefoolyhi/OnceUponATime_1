@@ -2,9 +2,9 @@
     {"Dialogues": [{"Person": "Jake", "Text": "Hi!"}, {"Person": "Tom", "Text": "Hello!"}, {"Person": "", "Text": "Bonsoir!"}], "SceneType": "General", "Background": "images/Test/background.png"},
     {"Dialogues":  [{"Person": "Jake", "Text": "Hi!"}, {"Person": "MainHero", "Text": "Hello!"}], "SceneType": "Logic", "Background":  "images/Test/background.png"},
     {"Dialogues":  [{"Person": "MainHero", "Text": "Hi!"}, {"Person": "Tom", "Text": "Would you like to go swimming?"}], "SceneType": "Intuitional", "Background":  "images/Test/background.png"},
-    {"Background":  "images/Test/background.png", "Hero": "MainHero", "Choices":
+    {"Background":  "images/Test/background.png", "Hero": "MainHero", "Choices": 
     [
-      {"Text":"Yes", "LogicDelta": 0, "IntuitionalDelta": 2, "DiamondDelta": 15, "RelationshipDelta": {"Olivia": -1, "Tom" : 3}, "NextScene": {"Dialogues":  [{"Person": "Tom", "Text": "Hi!"}, {"Person": "MainHero", "Text": "Hello!"}], "SceneType": "Love", "Background":  "images/Test/background.png"}},
-      {"Text":"No", "LogicDelta": 2, "IntuitionalDelta": 0, "DiamondDelta": 0, "RelationshipDelta": {"MainLover": 3, "Olivia": -1, "Tom" : -1}, "NextScene": {"Dialogues":  [{"Person": "MainLover", "Text": "Hi!"}, {"Person": "MainHero", "Text": "Hello!"}], "SceneType": "Love", "Background":  "images/Test/background.png"}}
+      {"Text":"Yes", "LogicDelta": 0, "IntuitionalDelta": 2, "DiamondDelta": 15, "RelationshipDelta": {"Olivia": -1, "Tom" : 3}, "NextScenes": [{"Dialogues":  [{"Person": "Tom", "Text": "Hi!"}, {"Person": "MainHero", "Text": "Hello!"}], "SceneType": "Love", "Background":  "images/Test/background.png"}]},
+      {"Text":"No", "LogicDelta": 2, "IntuitionalDelta": 0, "DiamondDelta": 0, "RelationshipDelta": {"MainLover": 3, "Olivia": -1, "Tom" : -1}, "NextScenes": [{"Dialogues":  [{"Person": "MainLover", "Text": "Hi!"}, {"Person": "MainHero", "Text": "Hello!"}], "SceneType": "Love", "Background":  "images/Test/background.png"}]}
     ]}
-]
+  ]
