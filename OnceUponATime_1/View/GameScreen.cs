@@ -98,10 +98,11 @@ namespace OnceUponATime_1
             var graphics = e.Graphics;
             graphics.SmoothingMode = SmoothingMode.HighQuality;
 
+            var rectImage = new Rectangle(50, Height - 500, 500, 500);
             graphics.DrawImage(states.States.Image, new Rectangle(states.Location, states.Size));
-            graphics.DrawImage(person, new Rectangle(50, Height - 500, 500, 500));
+            graphics.DrawImage(person, rectImage);
 
-            var rect = new Rectangle(550, Height - 300, Width - 600, 250);
+            var rect = new Rectangle(rectImage.X + rectImage.Width, Height - 300, Width - rectImage.X - rectImage.Width - 50, 250);
             var roundingValue = Height / 100F * roundingPercent;
             var rectPath = Rounder.MakeRoundedRectangle(rect, roundingValue);
 
@@ -111,7 +112,7 @@ namespace OnceUponATime_1
             var rectName = new Rectangle(rect.X + 10, rect.Y + 10, rect.Width - 20, 40);
             var rectPhrase = new Rectangle(rectName.X, rectName.Y + 50, rect.Width - 20, rect.Height - rectName.Height - 30);
 
-            graphics.DrawString(name, new Font("Palatino Linotype", 22, FontStyle.Bold), new SolidBrush(ForeColor), rectName, nameSF);
+            graphics.DrawString(name, new Font("Palatino Linotype", 24, FontStyle.Bold), new SolidBrush(ForeColor), rectName, nameSF);
             graphics.DrawString(phrase, new Font("Palatino Linotype", 22), new SolidBrush(ForeColor), rectPhrase, phraseSF);
         }
 

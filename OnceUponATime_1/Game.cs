@@ -8,7 +8,6 @@ namespace OnceUponATime_1
 {
     public class Game
     {
-        private GameStage stage = GameStage.Loading;
         public Player Player;
         public event Action<string> Stop;
         private readonly JsonParser<List<Scene>> _scenesParser;
@@ -41,11 +40,11 @@ namespace OnceUponATime_1
         public int DiamondsDelta => _diamondsDelta;
         public int IntuitionDelta => _intuitionDelta;
         public Story Story => story;
-        public GameStage Stage => stage;
+        public GameStage Stage { get; private set; } = GameStage.Loading;
         public event Action<GameStage> StageChanged;
         private void ChangeStage(GameStage stage)
         {
-            this.stage = stage;
+            this.Stage = stage;
             StageChanged?.Invoke(stage);
         }
 
