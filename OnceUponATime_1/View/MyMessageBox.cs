@@ -10,7 +10,7 @@ namespace OnceUponATime_1
         private readonly StringFormat _headSf = new StringFormat();
         private readonly StringFormat _mainTextSf = new StringFormat();
         public readonly MyButton MainButton;
-        public readonly MyExitButton ExitButton;
+        public readonly MyControlButton ExitButton;
         private readonly string _mainText;
         private readonly Color _strokeColor;
 
@@ -71,7 +71,7 @@ namespace OnceUponATime_1
             };
             Controls.Add(MainButton);
 
-            ExitButton = new MyExitButton
+            ExitButton = new MyControlButton(Loader.LoadImagePng("game images", "exit"))
             {
                 Size = new Size(30, 30),
                 Location = new Point(Size.Width - 32, 2)
@@ -124,7 +124,7 @@ namespace OnceUponATime_1
             };
             Controls.Add(buttonNo);
 
-            ExitButton = new MyExitButton
+            ExitButton = new MyControlButton(Loader.LoadImagePng("game images", "exit"))
             {
                 Size = new Size(30, 30),
                 Location = new Point(Size.Width - 32, 2)

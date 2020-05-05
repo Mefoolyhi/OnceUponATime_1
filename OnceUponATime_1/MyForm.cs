@@ -11,7 +11,8 @@ namespace OnceUponATime_1
         private readonly MainScreen _mainScreen;
         private readonly GameScreen _gameScreen;
         private readonly EndScreen _endScreen;
-        private readonly MyExitButton _exitButton;
+        private readonly MyControlButton _exitButton;
+        private readonly MyControlButton _hideButton;
 
         public MyForm()
         {
@@ -23,10 +24,16 @@ namespace OnceUponATime_1
             FormBorderStyle = FormBorderStyle.None;
             Icon = Loader.LoadIcon("game images", "heart");
 
-            _exitButton = new MyExitButton
+            _exitButton = new MyControlButton(Loader.LoadImagePng("game images", "exit"))
             {
                 Size = new Size(30, 30),
                 Location = new Point(Size.Width - 31, 1)
+            };
+
+            _hideButton = new MyControlButton(Loader.LoadImagePng("game images", "hide"))
+            {
+                Size = new Size(30, 30),
+                Location = new Point(Size.Width - 2 * _exitButton.Width - 1, 1)
             };
 
             _loadScreen = new LoadScreen
@@ -57,6 +64,7 @@ namespace OnceUponATime_1
                 Size = Size
             };
 
+            Controls.Add(_hideButton);
             Controls.Add(_exitButton);
             Controls.Add(_loadScreen);
             Controls.Add(_gameScreen);
@@ -66,9 +74,11 @@ namespace OnceUponATime_1
             SizeChanged += (sender, args) =>
             {
                 _exitButton.Location = new Point(Size.Width - _exitButton.Size.Width - 1, 1);
+                _hideButton.Location = new Point(Size.Width - 2 * _exitButton.Width - 1, 1);
             };
 
             _exitButton.Click += ExitButton_Click;
+            _hideButton.Click += HideButton_Click;
             _game.StageChanged += Game_OnStageChanged;
             ShowLoadScreen();
 
@@ -86,6 +96,8 @@ namespace OnceUponATime_1
             get => base.Text;
             set => base.Text = value;
         }
+
+        private void HideButton_Click(object sender, EventArgs e) => WindowState = FormWindowState.Minimized;
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
@@ -115,7 +127,8 @@ namespace OnceUponATime_1
         private void ShowLoadScreen()
         {
             HideScreens();
-            _exitButton.Hide();
+            _exitButton.Show();
+            _exitButton.Show();
             _loadScreen.Configure(_game);
             _loadScreen.Show();
         }
@@ -123,6 +136,7 @@ namespace OnceUponATime_1
         private void ShowGameScreen()
         {
             HideScreens();
+            _exitButton.Hide();
             _exitButton.Hide();
             _gameScreen.Configure(_game);
             _gameScreen.Show();
@@ -132,6 +146,7 @@ namespace OnceUponATime_1
         {
             HideScreens();
             _exitButton.Hide();
+            _exitButton.Hide();
             _endScreen.Configure(_game);
             _endScreen.Show();
         }
@@ -139,6 +154,7 @@ namespace OnceUponATime_1
         private void ShowMainScreen()
         {
             HideScreens();
+            _exitButton.Show();
             _exitButton.Show();
             _mainScreen.Configure(_game);
             _mainScreen.Show();

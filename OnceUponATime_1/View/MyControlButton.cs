@@ -5,12 +5,12 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class MyExitButton : Control
+    public sealed class MyControlButton : Control
     {
         private readonly PictureBox _button;
         private bool _mouseEntered;
         private bool _mousePressed;
-        public MyExitButton()
+        public MyControlButton(Image image)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
                 | ControlStyles.OptimizedDoubleBuffer
@@ -24,7 +24,7 @@ namespace OnceUponATime_1
             _button = new PictureBox
             {
                 Size = Size,
-                Image = Loader.LoadImagePng("game images", "exit"),
+                Image = image,
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
         }

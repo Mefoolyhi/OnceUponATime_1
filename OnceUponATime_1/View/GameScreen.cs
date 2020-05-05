@@ -177,6 +177,11 @@ namespace OnceUponATime_1
         {
             Hearts.Text = _game.Player.Diamonds.ToString();
             Keys.Text = _game.Player.Keys.ToString();
+            BackgroundImage = Loader.LoadImageJpg(_game.StoryName, _game.CurrentScene.Background);
+            _person = Loader.LoadImagePng(_game.StoryName, _game.CurrentPhrase.Person);
+            _name = _game.CurrentPerson;
+            _phrase = _game.CurrentPhrase.Text;
+            _count = 0;
             Invalidate();
         }
     }
