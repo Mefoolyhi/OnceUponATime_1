@@ -6,8 +6,7 @@ namespace OnceUponATime_1
 {
     public class GameLogic
     {
-        public event Action<string> Stop;    
-        public static string StoryName;
+        public event Action<string> Stop;  
         private readonly Story _story;
         private readonly JsonParser<List<Scene>> _scenesParser;
         private int _logicDelta;
@@ -18,7 +17,6 @@ namespace OnceUponATime_1
         public GameLogic(Story story)
         {
             _story = story;
-            StoryName = story.Name;
             _scenesParser = new JsonParser<List<Scene>>();
         }
 

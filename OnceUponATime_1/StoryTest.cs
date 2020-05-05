@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
-
 namespace OnceUponATime_1
 {
     [TestFixture]
     public class StoryTest
     {
-        private MainHero GetMH()
+        private MainHero GetMh()
         {
             var hero = new MainHero("MainHero");
             hero.SetSympathies( new Dictionary<string, int> {{"Tom", 2},{"Olivia", 4}, {"Jake", -5}});
@@ -19,7 +18,7 @@ namespace OnceUponATime_1
         [Test]
         public void TestMainHeroSetSympGeneral()
         {
-            var hero = GetMH();
+            var hero = GetMh();
             hero.Name.Should().Be("MainHero");
             hero.MainLover.Should().Be("Olivia");
             hero.Sympathies["Olivia"].Should().Be(4);
@@ -30,7 +29,7 @@ namespace OnceUponATime_1
         [Test]
         public void TestMainHeroSeSympMainLoverOliviaBoth()
         {
-            var hero = GetMH();
+            var hero = GetMh();
             var d = new Dictionary<string, int>{{"MainLover", 2},{"Olivia", 4}};
             hero.SetSympathies(d);
             hero.Sympathies["Olivia"].Should().Be(6);
@@ -41,7 +40,7 @@ namespace OnceUponATime_1
         [Test]
         public void TestMainHeroSetSympOnlyMainLover()
         {
-            var hero = GetMH();
+            var hero = GetMh();
             var d = new Dictionary<string, int>{{"MainLover", 2},{"Tom", 4}};
             hero.SetSympathies(d);
             hero.Sympathies["Olivia"].Should().Be(6);
@@ -56,7 +55,7 @@ namespace OnceUponATime_1
             jp.SetFilenameForReading(@"\StoriesConfigTest.json");
             var list = jp.GetObject();
             list.Count.Should().Be(1);
-            var hero = GetMH();
+            var hero = GetMh();
             var story = new Story("Test", new List<int> {1}, hero);
             list[0].Should().BeEquivalentTo(story);
         }
@@ -64,8 +63,7 @@ namespace OnceUponATime_1
         [Test]
         public void TestStoryGetNextSeries()
         {
-            var story = new Story("Test", new List<int> {1}, GetMH());
-            GameLogic.StoryName = story.Name;
+            var story = new Story("Test", new List<int> {1}, GetMh());
             story.GetNextSeries().Should().Be(@"\series\Test\1_1.json");
         }
         
@@ -80,24 +78,24 @@ namespace OnceUponATime_1
                 new Scene(new List<Phrase> {new Phrase("Jake", "Hi!"),
                     new Phrase("Tom", "Hello!"),
                     new Phrase("", "Bonsoir!")},
-                    "General", "images/Test/background.png",null, null),
+                    "General", "background",null, null),
                 new Scene(new List<Phrase> {new Phrase("Jake", "Hi!"),
                         new Phrase("MainHero", "Hello!")},
-                    "Logic", "images/Test/background.png",null, null),
+                    "Logic", "background",null, null),
                 new Scene(new List<Phrase> {new Phrase("MainHero", "Hi!"),
                         new Phrase("Tom", "Would you like to go swimming?")},
-                    "Intuitional", "images/Test/background.png",null, null),
-                new Scene(null, null, "images/Test/background.png","MainHero", 
+                    "Intuitional", "background",null, null),
+                new Scene(null, null, "background","MainHero", 
                     new List<Choice> { new Choice("Yes", 0, 2, 15,
                         new Dictionary<string, int> {{"Olivia", -1}, {"Tom", 3}}, 
                         new List<Scene>{new Scene(new List<Phrase> {new Phrase("Tom", "Hi!"),
                                 new Phrase("MainHero", "Hello!")},
-                            "Love", "images/Test/background.png",null, null)}),
+                            "Love", "background",null, null)}),
                         new Choice("No", 2, 0, 0, 
                             new Dictionary<string, int> {{"MainLover", 3}, {"Olivia", -1}, {"Tom", -1}},
                             new List<Scene>{ new Scene(new List<Phrase> {new Phrase("MainLover", "Hi!"),
                                     new Phrase("MainHero", "Hello!")},
-                                "Love", "images/Test/background.png",null, null)})
+                                "Love", "background",null, null)})
                     })};
             list.Should().BeEquivalentTo(scenes);
         }
@@ -107,7 +105,7 @@ namespace OnceUponATime_1
         {
             using var jp = new JsonParser<List<Story>>();
             jp.SetFilenameForWriting(@"\1.json");
-            var story = new Story("Test", new List<int> {1}, GetMH());
+            var story = new Story("Test", new List<int> {1}, GetMh());
             story.SetSeries(0, 0);
             jp.SaveToFile(new List<Story> {story});
             jp.SetFilenameForReading(@"\1.json");
@@ -154,7 +152,7 @@ namespace OnceUponATime_1
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(12);
             
-            p = new Player(0, 0, 12, DateTime.Parse("21/04/2020")); //yesterday
+            p = new Player(0, 0, 12, DateTime.Parse("04/05/2020")); //yesterday
             p.TryUpdateLastVisitAndDaysCountRecords().Should().Be(true);
             p.LastVisit.Should().Be(DateTime.Today);
             p.TotalDays.Should().Be(13);

@@ -7,15 +7,15 @@ namespace OnceUponATime_1
 {
     public class EndScreen : Control
     {
-        private Game game;
-        private MyButton continueButton;
-        private MyStates states;
-        private Label text;
-        private Label numbers;
-        private PictureBox heart;
-        private Rectangle rect;
-        private Color rectColor;
-        private int roundingPercent = 3;
+        private Game _game;
+        private MyButton _continueButton;
+        private MyStates _states;
+        private Label _text;
+        private Label _numbers;
+        private PictureBox _heart;
+        private Rectangle _rect;
+        private Color _rectColor;
+        private int _roundingPercent = 3;
         public EndScreen()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
@@ -28,61 +28,61 @@ namespace OnceUponATime_1
 
             BackColor = ColorTranslator.FromHtml("#DACEED");
             ForeColor = ColorTranslator.FromHtml("#1D132B");
-            rectColor = ColorTranslator.FromHtml("#C5ACEF");
+            _rectColor = ColorTranslator.FromHtml("#C5ACEF");
             Font = new Font("Palatino Linotype", 40, FontStyle.Bold);
-            states = new MyStates();
+            _states = new MyStates();
 
-            continueButton = new MyButton
+            _continueButton = new MyButton
             {
                 Size = new Size(280, 80),
                 RoundingEnable = true,
                 RoundingPercent = 100,
                 Text = "Продолжить",
-                Font = new Font("Palatino Linotype", 26, FontStyle.Bold),
+                Font = new Font("Palatino Linotype", 26, FontStyle.Bold)
             };
 
-            rect = new Rectangle(200, states.Size.Height * 2, Width - 400,
-                Height - states.Size.Height * 2 - continueButton.Size.Height * 2);
+            _rect = new Rectangle(200, _states.Size.Height * 2, Width - 400,
+                Height - _states.Size.Height * 2 - _continueButton.Size.Height * 2);
 
-            text = new Label
+            _text = new Label
             {
                 Text = "Интуиция:\n\nЛогика:\n\nНаграда за прохождение серии:",
                 Font = new Font("Palatino Linotype", 40),
-                BackColor = rectColor
+                BackColor = _rectColor
             };
 
-            numbers = new Label
+            _numbers = new Label
             {
-                Font = this.Font,
-                BackColor = rectColor
+                Font = Font,
+                BackColor = _rectColor
             };
             
-            heart = new PictureBox
+            _heart = new PictureBox
             {
-                Image = Loader.LoadImagePNG("game images", "heart"),
+                Image = Loader.LoadImagePng("game images", "heart"),
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                BackColor = rectColor
+                BackColor = _rectColor
             };
 
-            Controls.Add(continueButton);
-            Controls.Add(states);
-            Controls.Add(text);
-            Controls.Add(heart);
-            Controls.Add(numbers);
+            Controls.Add(_continueButton);
+            Controls.Add(_states);
+            Controls.Add(_text);
+            Controls.Add(_heart);
+            Controls.Add(_numbers);
 
             SizeChanged += (sender, args) =>
             {
-                continueButton.Location = new Point((ClientSize.Width - continueButton.Size.Width) / 2,
-                    (int)(ClientSize.Height - 1.5 * continueButton.Size.Height));
-                states.Location = new Point((ClientSize.Width - states.Size.Width) / 2, (int)(0.5 * states.Size.Height));
-                rect = new Rectangle(200, states.Size.Height * 2, Width - 400,
-                    Height - states.Size.Height * 2 - continueButton.Size.Height * 2);
-                text.Location = new Point(rect.X + 20, rect.Y + 20);
-                text.Size = new Size(3 * rect.Width / 5, (int)(rect.Height * 0.9));
-                numbers.Size = new Size(3 * rect.Width / 10, (int)(rect.Height * 0.9));
-                numbers.Location = new Point(text.Location.X + text.Width + 20, rect.Y + 20);
-                heart.Size = new Size(65, 65);
-                heart.Location = new Point(numbers.Location.X + numbers.Size.Width / 4, numbers.Location.Y + numbers.Width - 40);
+                _continueButton.Location = new Point((ClientSize.Width - _continueButton.Size.Width) / 2,
+                    (int)(ClientSize.Height - 1.5 * _continueButton.Size.Height));
+                _states.Location = new Point((ClientSize.Width - _states.Size.Width) / 2, (int)(0.5 * _states.Size.Height));
+                _rect = new Rectangle(200, _states.Size.Height * 2, Width - 400,
+                    Height - _states.Size.Height * 2 - _continueButton.Size.Height * 2);
+                _text.Location = new Point(_rect.X + 20, _rect.Y + 20);
+                _text.Size = new Size(3 * _rect.Width / 5, (int)(_rect.Height * 0.9));
+                _numbers.Size = new Size(3 * _rect.Width / 10, (int)(_rect.Height * 0.9));
+                _numbers.Location = new Point(_text.Location.X + _text.Width + 20, _rect.Y + 20);
+                _heart.Size = new Size(65, 65);
+                _heart.Location = new Point(_numbers.Location.X + _numbers.Size.Width / 4, _numbers.Location.Y + _numbers.Width - 40);
             };
         }
 
@@ -94,40 +94,40 @@ namespace OnceUponATime_1
             graphics.Clear(Parent.BackColor);
 
             var roundingValue = 0.1F;
-            if (roundingPercent > 0)
+            if (_roundingPercent > 0)
             {
-                roundingValue = Height / 100F * roundingPercent;
+                roundingValue = Height / 100F * _roundingPercent;
             }
 
-            var rectPath = Rounder.MakeRoundedRectangle(rect, roundingValue);
+            var rectPath = Rounder.MakeRoundedRectangle(_rect, roundingValue);
 
-            graphics.DrawPath(new Pen(rectColor), rectPath);
-            graphics.FillPath(new SolidBrush(rectColor), rectPath);
+            graphics.DrawPath(new Pen(_rectColor), rectPath);
+            graphics.FillPath(new SolidBrush(_rectColor), rectPath);
         }
         public void Configure(Game game)
         {
-            if (this.game != null)
+            if (this._game != null)
             {
                 UpdateStates();
                 return;
             }
 
-            this.game = game;
+            this._game = game;
 
-            continueButton.Click += EndButton_Click;
-            states.Hearts.Text = game.Player.Diamonds.ToString();
-            states.Keys.Text = game.Player.Keys.ToString();
-            numbers.Text = $"{game.Story.Hero.Logic} + {game.LogicDelta}\n\n{game.Story.Hero.Intuition} + {game.IntuitionDelta}\n\n+5";
+            _continueButton.Click += EndButton_Click;
+            _states.Hearts.Text = game.Player.Diamonds.ToString();
+            _states.Keys.Text = game.Player.Keys.ToString();
+            _numbers.Text = $"{game.Story.Hero.Logic} + {game.LogicDelta}\n\n{game.Story.Hero.Intuition} + {game.IntuitionDelta}\n\n+5";
         }
         private void EndButton_Click(object sender, EventArgs e)
         {
-            game.ReturnToMainScreen();
+            _game.ReturnToMainScreen();
         }
         private void UpdateStates()
         {
-            numbers.Text = $"{game.Story.Hero.Logic} + {game.LogicDelta}\n\n{game.Story.Hero.Intuition} + {game.IntuitionDelta}\n\n+25";
-            states.Hearts.Text = game.Player.Diamonds.ToString();
-            states.Keys.Text = game.Player.Keys.ToString();
+            _numbers.Text = $"{_game.Story.Hero.Logic} + {_game.LogicDelta}\n\n{_game.Story.Hero.Intuition} + {_game.IntuitionDelta}\n\n+25";
+            _states.Hearts.Text = _game.Player.Diamonds.ToString();
+            _states.Keys.Text = _game.Player.Keys.ToString();
             Invalidate();
         }
     }   

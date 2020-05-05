@@ -6,16 +6,16 @@ namespace OnceUponATime_1
 {
     class MyForm : Form
     {
-        private Game game;
-        private LoadScreen loadScreen;
-        private MainScreen mainScreen;
-        private GameScreen gameScreen;
-        private EndScreen endScreen;
-        private MyExitButton ExitButton;
+        private readonly Game _game;
+        private readonly LoadScreen _loadScreen;
+        private readonly MainScreen _mainScreen;
+        private readonly GameScreen _gameScreen;
+        private readonly EndScreen _endScreen;
+        private readonly MyExitButton _exitButton;
 
         public MyForm()
         {
-            game = new Game();
+            _game = new Game();
             Name = "Once upon a time";
             Text = Name;
             BackColor = ColorTranslator.FromHtml("#DACEED");
@@ -23,62 +23,74 @@ namespace OnceUponATime_1
             FormBorderStyle = FormBorderStyle.None;
             Icon = Loader.LoadIcon("game images", "heart");
 
-            ExitButton = new MyExitButton
+            _exitButton = new MyExitButton
             {
                 Size = new Size(30, 30),
-                Location = new Point(Size.Width - 31, 1),
+                Location = new Point(Size.Width - 31, 1)
             };
 
-            loadScreen = new LoadScreen
+            _loadScreen = new LoadScreen
             {
                 Dock = DockStyle.Fill,
                 Location = new Point(0, 0),
-                Size = this.Size
+                Size = Size
             };
 
-            gameScreen = new GameScreen()
+            _gameScreen = new GameScreen
             {
                 Dock = DockStyle.Fill,
                 Location = new Point(0, 0),
-                Size = this.Size
+                Size = Size
             };
 
-            mainScreen = new MainScreen
+            _mainScreen = new MainScreen
             {
                 Dock = DockStyle.Fill,
                 Location = new Point(0, 0),
-                Size = this.Size
+                Size = Size
             };
 
-            endScreen = new EndScreen
+            _endScreen = new EndScreen
             {
                 Dock = DockStyle.Fill,
                 Location = new Point(0, 0),
-                Size = this.Size
+                Size = Size
             };
 
-            Controls.Add(ExitButton);
-            Controls.Add(loadScreen);
-            Controls.Add(gameScreen);
-            Controls.Add(mainScreen);
-            Controls.Add(endScreen);
+            Controls.Add(_exitButton);
+            Controls.Add(_loadScreen);
+            Controls.Add(_gameScreen);
+            Controls.Add(_mainScreen);
+            Controls.Add(_endScreen);
 
             SizeChanged += (sender, args) =>
             {
-                ExitButton.Location = new Point(Size.Width - ExitButton.Size.Width - 1, 1);
+                _exitButton.Location = new Point(Size.Width - _exitButton.Size.Width - 1, 1);
             };
 
-            ExitButton.Click += ExitButton_Click;
-            game.StageChanged += Game_OnStageChanged;
+            _exitButton.Click += ExitButton_Click;
+            _game.StageChanged += Game_OnStageChanged;
             ShowLoadScreen();
 
-            Shown += (Object sender, EventArgs e) => game.Loading();
+            Shown += (sender, e) => _game.Loading();
+        }
+
+        public sealed override Color BackColor
+        {
+            get => base.BackColor;
+            set => base.BackColor = value;
+        }
+
+        public sealed override string Text
+        {
+            get => base.Text;
+            set => base.Text = value;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            game.End(); 
-            this.Close();
+            _game.End(); 
+            Close();
         }
 
         private void Game_OnStageChanged(GameStage stage)
@@ -103,41 +115,41 @@ namespace OnceUponATime_1
         private void ShowLoadScreen()
         {
             HideScreens();
-            ExitButton.Hide();
-            loadScreen.Configure(game);
-            loadScreen.Show();
+            _exitButton.Hide();
+            _loadScreen.Configure(_game);
+            _loadScreen.Show();
         }
 
         private void ShowGameScreen()
         {
             HideScreens();
-            ExitButton.Hide();
-            gameScreen.Configure(game);
-            gameScreen.Show();
+            _exitButton.Hide();
+            _gameScreen.Configure(_game);
+            _gameScreen.Show();
         }
 
         private void ShowEndScreen()
         {
             HideScreens();
-            ExitButton.Hide();
-            endScreen.Configure(game);
-            endScreen.Show();
+            _exitButton.Hide();
+            _endScreen.Configure(_game);
+            _endScreen.Show();
         }
 
         private void ShowMainScreen()
         {
             HideScreens();
-            ExitButton.Show();
-            mainScreen.Configure(game);
-            mainScreen.Show();
+            _exitButton.Show();
+            _mainScreen.Configure(_game);
+            _mainScreen.Show();
         }
 
         private void HideScreens()
         {
-            mainScreen.Hide();
-            loadScreen.Hide();
-            gameScreen.Hide();
-            endScreen.Hide();
+            _mainScreen.Hide();
+            _loadScreen.Hide();
+            _gameScreen.Hide();
+            _endScreen.Hide();
         }
     }
 }

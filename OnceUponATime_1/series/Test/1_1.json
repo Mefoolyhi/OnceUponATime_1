@@ -58,7 +58,7 @@
           "Olivia": -1,
           "Tom": 3
         },
-        "NextScene": {
+        "NextScenes": [{
           "Dialogues": [
             {
               "Person": "Tom",
@@ -71,7 +71,7 @@
           ],
           "SceneType": "Love",
           "Background": "background"
-        }
+        }]
       },
       {
         "Text": "No",
@@ -83,7 +83,7 @@
           "Olivia": -1,
           "Tom": -1
         },
-        "NextScene": {
+        "NextScenes": [{
           "Dialogues": [
             {
               "Person": "MainLover",
@@ -96,7 +96,7 @@
           ],
           "SceneType": "Love",
           "Background": "background"
-        }
+        }]
       }
     ]
   }

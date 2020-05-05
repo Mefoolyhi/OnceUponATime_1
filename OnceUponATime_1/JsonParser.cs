@@ -34,8 +34,8 @@ namespace OnceUponATime_1
 
         public void Dispose()
         {
-            _fileStream.Dispose();
-            _streamReader.Dispose();
+            _fileStream?.Dispose();
+            _streamReader?.Dispose();
         }
     }
 }

@@ -5,23 +5,23 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class GameScreen : Control
+    public sealed class GameScreen : Control
     {
-        private Game game;
-        private readonly StringFormat nameSF = new StringFormat();
-        private readonly StringFormat phraseSF = new StringFormat();
-        private MyStates states;
-        private int count = 0;
-        private Label Hearts { get; set; }
-        private Label Keys { get; set; }
-        private Image person;
-        private string name;
-        private string phrase;
-        private ScreenForEnterName ScreenForEnterName;
-        private PictureBox menuButton;
-        private MyMenu menu;
+        private Game _game;
+        private readonly StringFormat _nameSf = new StringFormat();
+        private readonly StringFormat _phraseSf = new StringFormat();
+        private readonly MyStates _states;
+        private int _count;
+        private Label Hearts { get; }
+        private Label Keys { get; }
+        private Image _person;
+        private string _name;
+        private string _phrase;
+        private readonly ScreenForEnterName _screenForEnterName;
+        private readonly PictureBox _menuButton;
+        private readonly MyMenu _menu;
 
-        private int roundingPercent = 3;
+        private readonly int _roundingPercent = 3;
 
         public GameScreen()
         {
@@ -37,11 +37,11 @@ namespace OnceUponATime_1
             var statesColor = ColorTranslator.FromHtml("#AF89F0");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
 
-            nameSF.Alignment = StringAlignment.Near;
-            nameSF.LineAlignment = StringAlignment.Near;
+            _nameSf.Alignment = StringAlignment.Near;
+            _nameSf.LineAlignment = StringAlignment.Near;
 
-            phraseSF.Alignment = StringAlignment.Near;
-            phraseSF.LineAlignment = StringAlignment.Near;
+            _phraseSf.Alignment = StringAlignment.Near;
+            _phraseSf.LineAlignment = StringAlignment.Near;
 
             Hearts = new Label
             {
@@ -57,38 +57,38 @@ namespace OnceUponATime_1
                 Size = new Size(90, 40)
             };
 
-            ScreenForEnterName = new ScreenForEnterName
+            _screenForEnterName = new ScreenForEnterName
             {
-                Size = this.Size,
-                Location = new Point(0, 0),
+                Size = Size,
+                Location = new Point(0, 0)
             };
 
-            menuButton = new PictureBox
+            _menuButton = new PictureBox
             {
-                Image = Loader.LoadImagePNG("game images", "menu"),
+                Image = Loader.LoadImagePng("game images", "menu"),
                 Size = new Size(40, 40),
-                SizeMode = PictureBoxSizeMode.StretchImage,
+                SizeMode = PictureBoxSizeMode.StretchImage
             };
 
-            menu = new MyMenu();
-            states = new MyStates();
-            Controls.Add(ScreenForEnterName);
+            _menu = new MyMenu();
+            _states = new MyStates();
+            Controls.Add(_screenForEnterName);
             Controls.Add(Hearts);
             Controls.Add(Keys);
-            Controls.Add(menuButton);
-            Controls.Add(menu);
-            ScreenForEnterName.Hide();
-            menu.Hide();
+            Controls.Add(_menuButton);
+            Controls.Add(_menu);
+            _screenForEnterName.Hide();
+            _menu.Hide();
 
             SizeChanged += (sender, args) =>
             {
-                states.Location = new Point((ClientSize.Width - states.Size.Width) / 2, (int)(0.5 * states.Size.Height));
-                Hearts.Location = new Point(states.Location.X + states.Hearts.Location.X, states.Location.Y + states.Hearts.Location.Y);
-                Keys.Location = new Point(states.Location.X + states.Keys.Location.X, states.Location.Y + states.Keys.Location.Y);
-                ScreenForEnterName.Location = new Point(0, 0);
-                ScreenForEnterName.Size = this.Size;
-                menuButton.Location = new Point(20, 20);
-                menu.Location = new Point((Width - menu.Width) / 2, (Height - menu.Height) / 2);
+                _states.Location = new Point((ClientSize.Width - _states.Size.Width) / 2, (int)(0.5 * _states.Size.Height));
+                Hearts.Location = new Point(_states.Location.X + _states.Hearts.Location.X, _states.Location.Y + _states.Hearts.Location.Y);
+                Keys.Location = new Point(_states.Location.X + _states.Keys.Location.X, _states.Location.Y + _states.Keys.Location.Y);
+                _screenForEnterName.Location = new Point(0, 0);
+                _screenForEnterName.Size = Size;
+                _menuButton.Location = new Point(20, 20);
+                _menu.Location = new Point((Width - _menu.Width) / 2, (Height - _menu.Height) / 2);
             };
         }
 
@@ -99,11 +99,11 @@ namespace OnceUponATime_1
             graphics.SmoothingMode = SmoothingMode.HighQuality;
 
             var rectImage = new Rectangle(50, Height - 500, 500, 500);
-            graphics.DrawImage(states.States.Image, new Rectangle(states.Location, states.Size));
-            graphics.DrawImage(person, rectImage);
+            graphics.DrawImage(_states.States.Image, new Rectangle(_states.Location, _states.Size));
+            graphics.DrawImage(_person, rectImage);
 
             var rect = new Rectangle(rectImage.X + rectImage.Width, Height - 300, Width - rectImage.X - rectImage.Width - 50, 250);
-            var roundingValue = Height / 100F * roundingPercent;
+            var roundingValue = Height / 100F * _roundingPercent;
             var rectPath = Rounder.MakeRoundedRectangle(rect, roundingValue);
 
             graphics.DrawPath(new Pen(ColorTranslator.FromHtml("#503F6E")), rectPath);
@@ -112,29 +112,29 @@ namespace OnceUponATime_1
             var rectName = new Rectangle(rect.X + 10, rect.Y + 10, rect.Width - 20, 40);
             var rectPhrase = new Rectangle(rectName.X, rectName.Y + 50, rect.Width - 20, rect.Height - rectName.Height - 30);
 
-            graphics.DrawString(name, new Font("Palatino Linotype", 24, FontStyle.Bold), new SolidBrush(ForeColor), rectName, nameSF);
-            graphics.DrawString(phrase, new Font("Palatino Linotype", 22), new SolidBrush(ForeColor), rectPhrase, phraseSF);
+            graphics.DrawString(_name, new Font("Palatino Linotype", 24, FontStyle.Bold), new SolidBrush(ForeColor), rectName, _nameSf);
+            graphics.DrawString(_phrase, new Font("Palatino Linotype", 22), new SolidBrush(ForeColor), rectPhrase, _phraseSf);
         }
 
         public void Configure(Game game)
         {
-            if (this.game != null)
+            if (_game != null)
             {
                 UpdateStates();
                 return;
             }
 
-            this.game = game;
+            _game = game;
             game.NameEntering += ShowEnteringScreen;
-            ScreenForEnterName.buttonPlay.Click += GetName;
-            menuButton.Click += ShowMenu;
-            menu.Continue.Click += Continue;
-            menu.Restart.Click += Restart;
-            menu.Exit.Click += Exit;
-            BackgroundImage = Loader.LoadImageJPG(game.StoryName, game.CurrentScene.Background);
-            person = Loader.LoadImagePNG(game.StoryName, game.CurrentPhrase.Person);
-            name = game.CurrentPerson;
-            phrase = game.CurrentPhrase.Text;
+            _screenForEnterName.ButtonPlay.Click += GetName;
+            _menuButton.Click += ShowMenu;
+            _menu.Continue.Click += Continue;
+            _menu.Restart.Click += Restart;
+            _menu.Exit.Click += Exit;
+            BackgroundImage = Loader.LoadImageJpg(game.StoryName, game.CurrentScene.Background);
+            _person = Loader.LoadImagePng(game.StoryName, game.CurrentPhrase.Person);
+            _name = game.CurrentPerson;
+            _phrase = game.CurrentPhrase.Text;
             Click += GetNextPhrase;
             Hearts.Text = game.Player.Diamonds.ToString();
             Keys.Text = game.Player.Keys.ToString();
@@ -142,41 +142,41 @@ namespace OnceUponATime_1
 
         private void Exit(object sender, EventArgs e)
         {
-            game.ExitFromSerie();
-            menu.Hide();
+            _game.ExitFromSerie();
+            _menu.Hide();
         }
 
         private void Restart(object sender, EventArgs e)
         {
-            game.RestartSerie();
-            menu.Hide();
+            _game.RestartSerie();
+            _menu.Hide();
         }
 
-        private void Continue(object sender, EventArgs e) => menu.Hide();
-        private void ShowMenu(object sender, EventArgs e) => menu.Show();
-        private void GetName(object sender, EventArgs e) => game.SetName(ScreenForEnterName.name.Text);
-        private void ShowEnteringScreen() => ScreenForEnterName.Show();
+        private void Continue(object sender, EventArgs e) => _menu.Hide();
+        private void ShowMenu(object sender, EventArgs e) => _menu.Show();
+        private void GetName(object sender, EventArgs e) => _game.SetName(_screenForEnterName.Name.Text);
+        private void ShowEnteringScreen() => _screenForEnterName.Show();
         private void GetNextPhrase(object sender, EventArgs e)
         {
-            if (count == 1)
+            if (_count == 1)
             {
-                game.EndSerie();
+                _game.EndSerie();
             }
             else
             {
-                count++;
-                game.GetNextPhrase();
-                BackgroundImage = Loader.LoadImageJPG(game.StoryName, game.CurrentScene.Background);
-                person = Loader.LoadImagePNG(game.StoryName, game.CurrentPhrase.Person);
-                name = game.CurrentPerson;
-                phrase = game.CurrentPhrase.Text;
+                _count++;
+                _game.GetNextPhrase();
+                BackgroundImage = Loader.LoadImageJpg(_game.StoryName, _game.CurrentScene.Background);
+                _person = Loader.LoadImagePng(_game.StoryName, _game.CurrentPhrase.Person);
+                _name = _game.CurrentPerson;
+                _phrase = _game.CurrentPhrase.Text;
                 Invalidate();
             }
         }
         private void UpdateStates()
         {
-            Hearts.Text = game.Player.Diamonds.ToString();
-            Keys.Text = game.Player.Keys.ToString();
+            Hearts.Text = _game.Player.Diamonds.ToString();
+            Keys.Text = _game.Player.Keys.ToString();
             Invalidate();
         }
     }

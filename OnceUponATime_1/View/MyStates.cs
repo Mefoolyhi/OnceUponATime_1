@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    class MyStates : Control
+    sealed class MyStates : Control
     {
-        public Label Hearts { get; set; }
-        public Label Keys { get; set; }
+        public Label Hearts { get; }
+        public Label Keys { get;}
         public PictureBox States { get; }
-        private Color statesColor;
 
         public MyStates()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
-                | ControlStyles.OptimizedDoubleBuffer
-                | ControlStyles.ResizeRedraw
-                | ControlStyles.SupportsTransparentBackColor
-                | ControlStyles.UserPaint,
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.SupportsTransparentBackColor
+                     | ControlStyles.UserPaint,
                 true);
             DoubleBuffered = true;
 
             Size = new Size(430, 90);
             ForeColor = ColorTranslator.FromHtml("#1D132B");
-            statesColor = ColorTranslator.FromHtml("#AF89F0");
+            var statesColor = ColorTranslator.FromHtml("#AF89F0");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
 
             Hearts = new Label
@@ -45,8 +40,8 @@ namespace OnceUponATime_1
 
             States = new PictureBox
             {
-                Size = this.Size,
-                Image = Loader.LoadImagePNG("game images", "states"),
+                Size = Size,
+                Image = Loader.LoadImagePng("game images", "states"),
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 

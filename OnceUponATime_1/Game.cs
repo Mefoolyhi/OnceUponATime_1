@@ -9,55 +9,61 @@ namespace OnceUponATime_1
     public class Game
     {
         public Player Player;
-        public event Action<string> Stop;
         private readonly JsonParser<List<Scene>> _scenesParser;
-        private int _logicDelta;
-        private int _diamondsDelta;
-        private int _intuitionDelta;
-        public bool Replayed = false;
+        private int _logicDelta = 0;
+        private int _diamondsDelta = 0;
+        private int _intuitionDelta = 0;
 
 
-        private List<Story> stories;
-        private int currentStoryNumber = 0;
+        private List<Story> _stories;
+        public int StoriesNumber => _stories.Count;
+        private int _currentStoryNumber;
         public string StoryName;
-        private Story story { get; set; }
-        public List<Scene> Scenes;
-        public List<Phrase> Phrases;
-        private int currentSceneNumber = 0;
-        private int currentPhraseNumber = 0;
+        private Story _story { get; set; }
+        private List<Scene> _scenes;
+        private List<Phrase> _phrases;
+        private int _currentSceneNumber;
+        private int _currentPhraseNumber;
         public Scene CurrentScene;
         public Phrase CurrentPhrase;
         public string CurrentPerson;
-        public bool isEndOfSerie = false;
+        private bool _isEndOfSerie;
 
         public Game()
         {
             _scenesParser = new JsonParser<List<Scene>>();
         }
 
-        public int StoriesCount => stories.Count;
         public int LogicDelta => _logicDelta;
-        public int DiamondsDelta => _diamondsDelta;
         public int IntuitionDelta => _intuitionDelta;
-        public Story Story => story;
-        public GameStage Stage { get; private set; } = GameStage.Loading;
+        public Story Story => _story;
         public event Action<GameStage> StageChanged;
+
         private void ChangeStage(GameStage stage)
         {
-            this.Stage = stage;
             StageChanged?.Invoke(stage);
+        }
+        
+        private string DecodeName(string name)
+        {
+            var person = name;
+            if (person.Equals("MainHero"))
+                person = _story.Hero.Name;
+            if (person.Equals("MainLover"))
+                person = _story.Hero.MainLover;
+            return person;
         }
 
         public event Action NoSerie;
         public event Action GetGift;
         public event Action NoPlace;
-        public event Action StatesUpdeted;
+        public event Action StatesUpdated;
         public event Action NoKeys;
         public event Action NameEntering;
         private void SayNoSerie() => NoSerie?.Invoke();
         private void GetDailyGift() => GetGift?.Invoke();
         private void SayNoPlace() => NoPlace?.Invoke();
-        private void UpdateStates() => StatesUpdeted?.Invoke();
+        private void UpdateStates() => StatesUpdated?.Invoke();
         private void SayNoKeys() => NoKeys?.Invoke();
         private void EnterName() => NameEntering?.Invoke();
 
@@ -84,31 +90,29 @@ namespace OnceUponATime_1
         public async void Loading()
         {
             ChangeStage(GameStage.Loading);
-            stories = await LoadingInThread();
-            story = stories[currentStoryNumber];
-            StoryName = story.Name;
+            _stories = await LoadingInThread();
+            _story = _stories[_currentStoryNumber];
+            StoryName = _story.Name;
             ChangeStage(GameStage.Main);
-            if (Player.TryUpdateLastVisitAndDaysCountRecords())
-            {
-                GetDailyGift();
-                Player.AddDiamonds(25);
-                if (!Player.TrySetKeys(3))
-                    SayNoPlace();
-            }
+            if (!Player.TryUpdateLastVisitAndDaysCountRecords()) return;
+            GetDailyGift();
+            Player.AddDiamonds(25);
+            if (!Player.TrySetKeys(3))
+                SayNoPlace();
         }
 
         public void GetNextStory()
         {
-            currentStoryNumber = (currentStoryNumber + 1) % stories.Count;
-            story = stories[currentStoryNumber];
-            StoryName = story.Name;
+            _currentStoryNumber = (_currentStoryNumber + 1) % _stories.Count;
+            _story = _stories[_currentStoryNumber];
+            StoryName = _story.Name;
         }
 
         public void GetPreviousStory()
         {
-            currentStoryNumber = (currentStoryNumber - 1 + stories.Count) % stories.Count;
-            story = stories[currentStoryNumber];
-            StoryName = story.Name;
+            _currentStoryNumber = (_currentStoryNumber - 1 + _stories.Count) % _stories.Count;
+            _story = _stories[_currentStoryNumber];
+            StoryName = _story.Name;
         }
 
         Task<List<Scene>> LoadSerieInThread()
@@ -116,21 +120,20 @@ namespace OnceUponATime_1
             var task = new Task<List<Scene>>(
                 () =>
                 {
-                    var filename = story.GetNextSeries();
-                    var scenes = new List<Scene>();
+                    var filename = _story.GetNextSeries();
+                    List<Scene> scenes;
                     if (string.IsNullOrEmpty(filename))
                     {
                         return null;
                     }
-                    else
+
+                    using (_scenesParser)
                     {
-                        using (_scenesParser)
-                        {
-                            _scenesParser.SetFilenameForReading(filename);
-                            scenes = _scenesParser.GetObject();
-                        };
-                        Thread.Sleep(3000);
+                        _scenesParser.SetFilenameForReading(filename);
+                        scenes = _scenesParser.GetObject();
                     }
+
+                    Thread.Sleep(3000);
                     return scenes;
                 });
             task.Start();
@@ -144,10 +147,11 @@ namespace OnceUponATime_1
                 SayNoKeys();
                 return;
             }
+
             UpdateStates();
             StageChanged(GameStage.Loading);
-            Scenes = await LoadSerieInThread();
-            if (Scenes is null)
+            _scenes = await LoadSerieInThread();
+            if (_scenes is null)
             {
                 SayNoSerie();
                 Player.TrySetKeys(1);
@@ -155,47 +159,68 @@ namespace OnceUponATime_1
                 ChangeStage(GameStage.Main);
                 return;
             }
-            CurrentScene = Scenes[currentSceneNumber];
-            Phrases = CurrentScene.Dialogues;
-            CurrentPhrase = Phrases[currentPhraseNumber];
+
+            CurrentScene = _scenes[_currentSceneNumber];
+            _phrases = CurrentScene.Dialogues;
+            CurrentPhrase = _phrases[_currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
             StageChanged(GameStage.Game);
-            if ((story.CurrentSeason == 0 ||
-                (story.CurrentSeason == 0 && story.CurrentSeries == 0)))
+            if ((_story.CurrentSeason == 0 ||
+                 (_story.CurrentSeason == 0 && _story.CurrentSeries == 0)))
             {
                 EnterName();
             }
         }
+        
+        public void EndSerie()
+        {
+            ChangeStage(GameStage.Finished);
+            if (!_story.Hero.TrySetLogicIntuition(_logicDelta, _intuitionDelta))
+                Console.WriteLine("WARNING");
+            Player.AddDiamonds(5);
+            UpdateStates();
+        }
 
         public void SetName(string name)
         {
-            story.Hero.Name = name;
+            _story.Hero.Name = name;
         }
 
         public void GetNextPhrase()
         {
-            if (currentPhraseNumber == Phrases.Count -1)
+            if (_currentPhraseNumber == _phrases.Count - 1)
             {
                 GetNextScene();
                 return;
             }
-            currentPhraseNumber++;
-            CurrentPhrase = Phrases[currentPhraseNumber];
+
+            _currentPhraseNumber++;
+            CurrentPhrase = _phrases[_currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
         }
 
-        public void GetNextScene()
+        private void GetNextScene()
         {
-            if (currentSceneNumber == Scenes.Count - 1)
+            if (_currentSceneNumber == _scenes.Count - 1)
             {
-                isEndOfSerie = true;
+                _isEndOfSerie = true;
                 return;
             }
-            currentSceneNumber++;
-            CurrentScene = Scenes[currentSceneNumber];
-            currentPhraseNumber = 0;
-            Phrases = CurrentScene.Dialogues;
-            CurrentPhrase = Phrases[currentPhraseNumber];
+
+            _currentSceneNumber++;
+            CurrentScene = _scenes[_currentSceneNumber];
+            switch (CurrentScene.SceneType)
+            {
+                case SceneType.Logic:
+                    Console.WriteLine("Path of Logic");
+                    break;
+                case SceneType.Intuitional:
+                    Console.WriteLine("Path of Intuition");
+                    break;
+            }
+            _currentPhraseNumber = 0;
+            _phrases = CurrentScene.Dialogues;
+            CurrentPhrase = _phrases[_currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
         }
 
@@ -203,7 +228,7 @@ namespace OnceUponATime_1
         {
             var storyParser = new JsonParser<List<Story>>();
             storyParser.SetFilenameForWriting(@"\StoriesConfig.json");
-            storyParser.SaveToFile(stories);
+            storyParser.SaveToFile(_stories);
 
             var playerParser = new JsonParser<Player>();
             playerParser.SetFilenameForWriting(@"\GameConfig.json");
@@ -217,174 +242,25 @@ namespace OnceUponATime_1
 
         public void RestartSerie()
         {
-            story.RollbackSeries();
+            _story.RollbackSeries();
             Player.AddDiamonds(_diamondsDelta);
-            if (story.CurrentSeason == 0 && story.CurrentSeries == -1)
-                story.Hero.Name = "MainHero";
+            if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
+                _story.Hero.Name = "MainHero";
+            _currentPhraseNumber = 0;
+            _currentPhraseNumber = 0;
+            _logicDelta = 0;
+            _diamondsDelta = 0;
+            _intuitionDelta = 0;
             PlayGame();
         }
 
         public void ExitFromSerie()
         {
-            story.RollbackSeries();
+            _story.RollbackSeries();
             Player.AddDiamonds(_diamondsDelta);
-            if (story.CurrentSeason == 0 && story.CurrentSeries == -1)
-                story.Hero.Name = "MainHero";
+            if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
+                _story.Hero.Name = "MainHero";
             ReturnToMainScreen();
-        }
-
-        private void Menu()
-        {
-            Console.WriteLine("e - exit, c - continue, r - replay");
-            var ans = Console.ReadLine();
-            if (ans == null || (!ans.Equals("e") && !ans.Equals("r"))) return;
-            story.RollbackSeries();
-            Program.Player.AddDiamonds(_diamondsDelta);
-            if (story.CurrentSeason == 0 && story.CurrentSeries == -1)
-                story.Hero.Name = "MainHero";
-            Stop(ans.Equals("r") ? "restart" : "kill me");
-        }
-
-        private string DecodeName(string name)
-        {
-            var person = name;
-            if (person.Equals("MainHero"))
-                person = story.Hero.Name;
-            if (person.Equals("MainLover"))
-                person = story.Hero.MainLover;
-            return person;
-        }
-
-        private void PlayScene(ITalkingScene scene)
-        {
-            var cheated = false;
-            switch (scene.SceneType)
-            {
-                case SceneType.Logic:
-                    Console.WriteLine("Path of Logic");
-                    break;
-                case SceneType.Intuitional:
-                    Console.WriteLine("Path of Intuition");
-                    break;
-            }
-
-            foreach (var phrase in scene.Dialogues)
-            {
-                if (string.IsNullOrEmpty(phrase.Person))
-                    Console.WriteLine(phrase.Text);
-                else
-                {
-                    var person = DecodeName(phrase.Person);
-                    Console.WriteLine($@"{person}: ""{phrase.Text}""");
-                    if (scene.SceneType == SceneType.Love &&
-                        !person.Equals(story.Hero.Name) &&
-                        !person.Equals(story.Hero.MainLover) &&
-                        story.Hero.MaxSympathy >= 10)
-                        cheated = true;
-                }
-                var ans = Console.ReadLine();
-                while (ans == null)
-                    ans = Console.ReadLine();
-
-                if (ans.Equals("m"))
-                    Menu();
-            }
-            if (!cheated) return;
-            Console.WriteLine("Вы изменили своей второй половинке!");
-            story.Hero.SetSympathies(new Dictionary<string, int> { { "MainLover", -2 } });
-        }
-
-        public void EndSerie()
-        {
-            ChangeStage(GameStage.Finished);
-            if (!story.Hero.TrySetLogicIntuition(_logicDelta, _intuitionDelta))
-                Console.WriteLine("WARNING");
-            Player.AddDiamonds(5);
-            UpdateStates();
-        }
-
-        public void ProcessSerie()
-        {
-            if (story.CurrentSeason == -1 ||
-                (story.CurrentSeason == 0 && story.CurrentSeries == -1))
-            {
-                Console.WriteLine("Введите имя и нажмите enter");
-                story.Hero.Name = Console.ReadLine();
-            }
-            var filename = story.GetNextSeries();
-            if (string.IsNullOrEmpty(filename))
-            {
-                Console.WriteLine("Oooops We don't have series");
-                Program.Player.TrySetKeys(1);
-                Console.WriteLine($"Ключей {Program.Player.Keys}");
-                return;
-            }
-
-            List<Scene> scenesList;
-            using (_scenesParser)
-            {
-                _scenesParser.SetFilenameForReading(filename);
-                scenesList = _scenesParser.GetObject();
-            }
-
-            foreach (var scene in scenesList)
-            {
-                if (scene.SceneType == SceneType.None)
-                {
-                    IChoiceScene currentScene = scene;
-                    var person = DecodeName(currentScene.Hero);
-                    Console.WriteLine($"Алмазов {Program.Player.Diamonds}");
-                    Console.WriteLine($"{person} : ");
-                    foreach (var optionSqueeze in currentScene.Choices.Select(choice => choice.DiamondDelta == 0 ? choice.Text :
-                        string.Join(" ", choice.Text,
-                            Math.Abs(choice.DiamondDelta).ToString())))
-                    {
-                        Console.WriteLine(optionSqueeze);
-                    }
-
-
-                    var ans = Console.ReadLine();
-                    while (ans == null)
-                        ans = Console.ReadLine();
-                    if (ans.Equals("m"))
-                    {
-                        Menu();
-                        ans = Console.ReadLine();
-                    }
-
-                    var selectedOption = currentScene.Choices[int.Parse(ans)];
-                    while (!Program.Player.TryRemoveDiamonds(selectedOption.DiamondDelta))
-                    {
-                        Console.WriteLine("We don't have enough diamonds! Rechoose");
-                        ans = Console.ReadLine();
-                        while (ans == null)
-                            ans = Console.ReadLine();
-                        if (ans.Equals("m"))
-                        {
-                            Menu();
-                            ans = Console.ReadLine();
-                        }
-                        selectedOption = currentScene.Choices[int.Parse(ans)];
-                    }
-
-                    _diamondsDelta += selectedOption.DiamondDelta;
-                    Console.WriteLine($"Алмазов {Program.Player.Diamonds}");
-                    _logicDelta += selectedOption.LogicDelta;
-                    _intuitionDelta += selectedOption.IntuitionalDelta;
-                    story.Hero.SetSympathies(selectedOption.RelationshipDelta);
-                    foreach (var nextScene in selectedOption.NextScenes)
-                        PlayScene(nextScene);
-                }
-                else
-                {
-                    ITalkingScene currentScene = scene;
-                    if ((currentScene.SceneType == SceneType.Logic && story.Hero.Intuition + _intuitionDelta > story.Hero.Logic + _logicDelta) ||
-                        (currentScene.SceneType == SceneType.Intuitional && story.Hero.Logic + _logicDelta >= story.Hero.Intuition + _intuitionDelta))
-                        continue;
-                    PlayScene(scene);
-                }
-            }
-            EndSerie();
         }
     }
 }

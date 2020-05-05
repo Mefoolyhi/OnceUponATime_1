@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class MyExitButton : Control
+    public sealed class MyExitButton : Control
     {
-        private PictureBox Button;
-        private bool mouseEntered = false;
-        private bool mousePressed = false;
+        private readonly PictureBox _button;
+        private bool _mouseEntered;
+        private bool _mousePressed;
         public MyExitButton()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
@@ -21,10 +21,10 @@ namespace OnceUponATime_1
             DoubleBuffered = true;
 
             Size = new Size(30, 30);
-            Button = new PictureBox
+            _button = new PictureBox
             {
-                Size = this.Size,
-                Image = Loader.LoadImagePNG("game images", "exit"),
+                Size = Size,
+                Image = Loader.LoadImagePng("game images", "exit"),
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
         }
@@ -38,15 +38,15 @@ namespace OnceUponATime_1
             graphics.Clear(Parent.BackColor);
 
             var rect = new Rectangle(0, 0, Width, Height);
-            graphics.DrawImage(Button.Image, rect);
+            graphics.DrawImage(_button.Image, rect);
 
-            if (mouseEntered)
+            if (_mouseEntered)
             {
                 graphics.DrawRectangle(new Pen(Color.FromArgb(60, ColorTranslator.FromHtml("#8C64BF"))), rect);
                 graphics.FillRectangle(new SolidBrush(Color.FromArgb(60, ColorTranslator.FromHtml("#8C64BF"))), rect);
             }
 
-            if (mousePressed)
+            if (_mousePressed)
             {
                 graphics.DrawRectangle(new Pen(Color.FromArgb(60, Color.Black)), rect);
                 graphics.FillRectangle(new SolidBrush(Color.FromArgb(60, Color.Black)), rect);
@@ -56,28 +56,28 @@ namespace OnceUponATime_1
         protected override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
-            mouseEntered = true;
+            _mouseEntered = true;
             Invalidate();
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
-            mouseEntered = false;
+            _mouseEntered = false;
             Invalidate();
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            mousePressed = true;
+            _mousePressed = true;
             Invalidate();
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-            mousePressed = false;
+            _mousePressed = false;
             Invalidate();
         }
     }

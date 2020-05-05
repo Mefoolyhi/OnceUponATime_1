@@ -6,7 +6,7 @@ namespace OnceUponATime_1
 {
     public class Loader
     {
-        public static Image LoadImagePNG(string dirName, string pictureName)
+        public static Image LoadImagePng(string dirName, string pictureName)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace OnceUponATime_1
             }
         }
 
-        public static Image LoadImageJPG(string dirName, string pictureName)
+        public static Image LoadImageJpg(string dirName, string pictureName)
         {
             try
             {

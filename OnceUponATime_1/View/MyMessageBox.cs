@@ -5,43 +5,40 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class MyMessageBox : Control
+    public sealed class MyMessageBox : Control
     {
-        private readonly StringFormat headSF = new StringFormat();
-        private readonly StringFormat mainTextSF = new StringFormat();
-        public MyButton MainButton;
-        public MyButton ButtonYes;
-        public MyButton ButtonNo;
-        public MyExitButton ExitButton;
-        private string mainText;
-        private Color strokeColor;
+        private readonly StringFormat _headSf = new StringFormat();
+        private readonly StringFormat _mainTextSf = new StringFormat();
+        public readonly MyButton MainButton;
+        public readonly MyExitButton ExitButton;
+        private readonly string _mainText;
+        private readonly Color _strokeColor;
 
-        private bool roundingEnable = false;
-        public bool RoundingEnable
+        private bool _roundingEnable;
+
+        private bool RoundingEnable
         {
-            get => roundingEnable;
+            get => _roundingEnable;
             set
             {
-                roundingEnable = value;
+                _roundingEnable = value;
                 Refresh();
             }
         }
-        private int roundingPercent = 0;
+        private int _roundingPercent;
         public int RoundingPercent
         {
-            get => roundingPercent;
+            get => _roundingPercent;
             set
             {
-                if (value >= 0 && value <= 100)
-                {
-                    roundingPercent = value;
-                    Refresh();
-                }
+                if (value < 0 || value > 100) return;
+                _roundingPercent = value;
+                Refresh();
             }
         }
 
 
-        public MyMessageBox(string labelText, string mainText, string bottonText)
+        public MyMessageBox(string labelText, string mainText, string buttonText)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
                 | ControlStyles.OptimizedDoubleBuffer
@@ -54,20 +51,20 @@ namespace OnceUponATime_1
             Size = new Size(600, 300);
             BackColor = ColorTranslator.FromHtml("#AF9BCF");
             ForeColor = ColorTranslator.FromHtml("#1D132B");
-            strokeColor = ColorTranslator.FromHtml("#503F6E");
+            _strokeColor = ColorTranslator.FromHtml("#503F6E");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
             Text = labelText;
-            this.mainText = mainText;
+            this._mainText = mainText;
 
-            headSF.Alignment = StringAlignment.Center;
-            headSF.LineAlignment = StringAlignment.Near;
+            _headSf.Alignment = StringAlignment.Center;
+            _headSf.LineAlignment = StringAlignment.Near;
 
-            mainTextSF.Alignment = StringAlignment.Near;
-            mainTextSF.LineAlignment = StringAlignment.Near;
+            _mainTextSf.Alignment = StringAlignment.Near;
+            _mainTextSf.LineAlignment = StringAlignment.Near;
 
             MainButton = new MyButton
             {
-                Text = bottonText,
+                Text = buttonText,
                 RoundingEnable = true,
                 RoundingPercent = 100,
                 Location = new Point((Size.Width - 220) / 2, (int)(Size.Height - 1.3 * 60))
@@ -77,7 +74,7 @@ namespace OnceUponATime_1
             ExitButton = new MyExitButton
             {
                 Size = new Size(30, 30),
-                Location = new Point(Size.Width - 32, 2),
+                Location = new Point(Size.Width - 32, 2)
             };
             Controls.Add(ExitButton);
             ExitButton.Click += ExitButton_Click;
@@ -86,28 +83,28 @@ namespace OnceUponATime_1
         public MyMessageBox(string labelText, string mainText)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
-                | ControlStyles.OptimizedDoubleBuffer
-                | ControlStyles.ResizeRedraw
-                | ControlStyles.SupportsTransparentBackColor
-                | ControlStyles.UserPaint,
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.SupportsTransparentBackColor
+                     | ControlStyles.UserPaint,
                 true);
             DoubleBuffered = true;
 
             Size = new Size(600, 300);
             BackColor = ColorTranslator.FromHtml("#AF9BCF");
             ForeColor = ColorTranslator.FromHtml("#1D132B");
-            strokeColor = ColorTranslator.FromHtml("#503F6E");
+            _strokeColor = ColorTranslator.FromHtml("#503F6E");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
             Text = labelText;
-            this.mainText = mainText;
+            this._mainText = mainText;
 
-            headSF.Alignment = StringAlignment.Center;
-            headSF.LineAlignment = StringAlignment.Near;
+            _headSf.Alignment = StringAlignment.Center;
+            _headSf.LineAlignment = StringAlignment.Near;
 
-            mainTextSF.Alignment = StringAlignment.Near;
-            mainTextSF.LineAlignment = StringAlignment.Near;
+            _mainTextSf.Alignment = StringAlignment.Near;
+            _mainTextSf.LineAlignment = StringAlignment.Near;
 
-            ButtonYes = new MyButton
+            var buttonYes = new MyButton
             {
                 Text = "Yes",
                 RoundingEnable = true,
@@ -115,9 +112,9 @@ namespace OnceUponATime_1
                 Size = new Size(150, 60),
                 Location = new Point((Size.Width - 320) / 4, (int)(Size.Height - 1.3 * 60))
             };
-            Controls.Add(ButtonYes);
+            Controls.Add(buttonYes);
 
-            ButtonNo = new MyButton
+            var buttonNo = new MyButton
             {
                 Text = "No",
                 RoundingEnable = true,
@@ -125,12 +122,12 @@ namespace OnceUponATime_1
                 Size = new Size(150, 60),
                 Location = new Point((Size.Width + 160) / 2, (int)(Size.Height - 1.3 * 60))
             };
-            Controls.Add(ButtonNo);
+            Controls.Add(buttonNo);
 
             ExitButton = new MyExitButton
             {
                 Size = new Size(30, 30),
-                Location = new Point(Size.Width - 32, 2),
+                Location = new Point(Size.Width - 32, 2)
             };
             Controls.Add(ExitButton);
             ExitButton.Click += ExitButton_Click;
@@ -149,21 +146,21 @@ namespace OnceUponATime_1
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
 
             var roundingValue = 0.1F;
-            if (RoundingEnable && roundingPercent > 0)
+            if (RoundingEnable && _roundingPercent > 0)
             {
-                roundingValue = Height / 100F * roundingPercent;
+                roundingValue = Height / 100F * _roundingPercent;
             }
 
             var rectPath = Rounder.MakeRoundedRectangle(rect, roundingValue);
 
-            graphics.DrawPath(new Pen(strokeColor), rectPath);
+            graphics.DrawPath(new Pen(_strokeColor), rectPath);
             graphics.FillPath(new SolidBrush(BackColor), rectPath);
 
             var rect1 = new Rectangle(40, 10, Width - 80, Height - 250);
             var rect2 = new Rectangle(20, 70, Width - 40, Height - 160);
 
-            graphics.DrawString(Text, Font, new SolidBrush(ForeColor), rect1, headSF);
-            graphics.DrawString(mainText, new Font("Palatino Linotype", 22), new SolidBrush(ForeColor), rect2, mainTextSF);
+            graphics.DrawString(Text, Font, new SolidBrush(ForeColor), rect1, _headSf);
+            graphics.DrawString(_mainText, new Font("Palatino Linotype", 22), new SolidBrush(ForeColor), rect2, _mainTextSf);
 
         }
     }

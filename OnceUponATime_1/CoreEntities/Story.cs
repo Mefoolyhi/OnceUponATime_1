@@ -60,7 +60,7 @@ namespace OnceUponATime_1
             else
                 CurrentSeries++;
 
-            return $@"\series\{GameLogic.StoryName}\{(CurrentSeason + 1)}_{(CurrentSeries + 1)}.json";
+            return $@"\series\{Name}\{(CurrentSeason + 1)}_{(CurrentSeries + 1)}.json";
         }
     }
 }

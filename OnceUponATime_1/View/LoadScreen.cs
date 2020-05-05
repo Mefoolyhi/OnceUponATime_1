@@ -4,27 +4,27 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class LoadScreen : Control
+    public sealed class LoadScreen : Control
     {
-        private Game game;
-        private Font additionalFont;
+        private Game _game;
+
         public LoadScreen()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
-                | ControlStyles.OptimizedDoubleBuffer
-                | ControlStyles.ResizeRedraw
-                | ControlStyles.SupportsTransparentBackColor
-                | ControlStyles.UserPaint,
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.SupportsTransparentBackColor
+                     | ControlStyles.UserPaint,
                 true);
             DoubleBuffered = true;
             BackColor = ColorTranslator.FromHtml("#DACEED");
             ForeColor = ColorTranslator.FromHtml("#1D132B");
             Font = new Font(Loader.LoadFont("fonts", "GreatVibes-Regular"), 120);
-            additionalFont = new Font("Palatino Linotype", 18);
+            var additionalFont = new Font("Palatino Linotype", 18);
 
             var image = new PictureBox
             {
-                Image = Loader.LoadImagePNG("game images", "flowers"),
+                Image = Loader.LoadImagePng("game images", "flowers"),
                 Size = new Size(Width, 250),
                 Location = new Point(0, 0),
                 SizeMode = PictureBoxSizeMode.StretchImage
@@ -33,14 +33,14 @@ namespace OnceUponATime_1
             var gameName = new Label
             {
                 Text = "Once upon a time:" +
-                " Interactive stories",
+                " Interactive stories"
             };
 
             var additionalText = new Label
             {
                 Text = "                    " +
                 "Персонажи вымышленные.\nЕсли узнали себя или знакомых - это случайность :)",
-                Font = additionalFont,
+                Font = additionalFont
             };
 
             Controls.Add(additionalText);
@@ -60,10 +60,10 @@ namespace OnceUponATime_1
 
         public void Configure(Game game)
         {
-            if (this.game != null)
+            if (_game != null)
                 return;
 
-            this.game = game;
+            _game = game;
         }
 
         protected override void OnPaint(PaintEventArgs e)

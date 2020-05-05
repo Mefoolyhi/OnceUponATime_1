@@ -3,11 +3,11 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class MyMenu : Control
+    public sealed class MyMenu : Control
     {
-        public MyButton Continue;
-        public MyButton Restart;
-        public MyButton Exit;
+        public readonly MyButton Continue;
+        public readonly MyButton Restart;
+        public readonly MyButton Exit;
 
         public MyMenu()
         {
