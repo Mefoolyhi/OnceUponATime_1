@@ -107,6 +107,9 @@
     <Compile Include="View\MyExitButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="View\MyMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="View\MyMessageBox.cs">
       <SubType>Component</SubType>
     </Compile>

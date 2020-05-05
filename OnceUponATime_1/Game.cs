@@ -156,9 +156,9 @@ namespace OnceUponATime_1
                 ChangeStage(GameStage.Main);
                 return;
             }
-            CurrentScene = Scenes.First();
+            CurrentScene = Scenes[currentSceneNumber];
             Phrases = CurrentScene.Dialogues;
-            CurrentPhrase = Phrases.First();
+            CurrentPhrase = Phrases[currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
             StageChanged(GameStage.Game);
             if ((story.CurrentSeason == 0 ||
@@ -214,6 +214,24 @@ namespace OnceUponATime_1
         public void ReturnToMainScreen()
         {
             ChangeStage(GameStage.Main);
+        }
+
+        public void RestartSerie()
+        {
+            story.RollbackSeries();
+            Player.AddDiamonds(_diamondsDelta);
+            if (story.CurrentSeason == 0 && story.CurrentSeries == -1)
+                story.Hero.Name = "MainHero";
+            PlayGame();
+        }
+
+        public void ExitFromSerie()
+        {
+            story.RollbackSeries();
+            Player.AddDiamonds(_diamondsDelta);
+            if (story.CurrentSeason == 0 && story.CurrentSeries == -1)
+                story.Hero.Name = "MainHero";
+            ReturnToMainScreen();
         }
 
         private void Menu()

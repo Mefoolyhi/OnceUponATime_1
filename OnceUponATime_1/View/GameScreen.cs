@@ -17,7 +17,9 @@ namespace OnceUponATime_1
         private Image person;
         private string name;
         private string phrase;
-        public ScreenForEnterName ScreenForEnterName;
+        private ScreenForEnterName ScreenForEnterName;
+        private PictureBox menuButton;
+        private MyMenu menu;
 
         private int roundingPercent = 3;
 
@@ -61,11 +63,22 @@ namespace OnceUponATime_1
                 Location = new Point(0, 0),
             };
 
+            menuButton = new PictureBox
+            {
+                Image = Loader.LoadImagePNG("game images", "menu"),
+                Size = new Size(40, 40),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+            };
+
+            menu = new MyMenu();
             states = new MyStates();
             Controls.Add(ScreenForEnterName);
             Controls.Add(Hearts);
             Controls.Add(Keys);
+            Controls.Add(menuButton);
+            Controls.Add(menu);
             ScreenForEnterName.Hide();
+            menu.Hide();
 
             SizeChanged += (sender, args) =>
             {
@@ -74,6 +87,8 @@ namespace OnceUponATime_1
                 Keys.Location = new Point(states.Location.X + states.Keys.Location.X, states.Location.Y + states.Keys.Location.Y);
                 ScreenForEnterName.Location = new Point(0, 0);
                 ScreenForEnterName.Size = this.Size;
+                menuButton.Location = new Point(20, 20);
+                menu.Location = new Point((Width - menu.Width) / 2, (Height - menu.Height) / 2);
             };
         }
 
@@ -111,6 +126,10 @@ namespace OnceUponATime_1
             this.game = game;
             game.NameEntering += ShowEnteringScreen;
             ScreenForEnterName.buttonPlay.Click += GetName;
+            menuButton.Click += ShowMenu;
+            menu.Continue.Click += Continue;
+            menu.Restart.Click += Restart;
+            menu.Exit.Click += Exit;
             BackgroundImage = Loader.LoadImageJPG(game.StoryName, game.CurrentScene.Background);
             person = Loader.LoadImagePNG(game.StoryName, game.CurrentPhrase.Person);
             name = game.CurrentPerson;
@@ -120,6 +139,20 @@ namespace OnceUponATime_1
             Keys.Text = game.Player.Keys.ToString();
         }
 
+        private void Exit(object sender, EventArgs e)
+        {
+            game.ExitFromSerie();
+            menu.Hide();
+        }
+
+        private void Restart(object sender, EventArgs e)
+        {
+            game.RestartSerie();
+            menu.Hide();
+        }
+
+        private void Continue(object sender, EventArgs e) => menu.Hide();
+        private void ShowMenu(object sender, EventArgs e) => menu.Show();
         private void GetName(object sender, EventArgs e) => game.SetName(ScreenForEnterName.name.Text);
         private void ShowEnteringScreen() => ScreenForEnterName.Show();
         private void GetNextPhrase(object sender, EventArgs e)
