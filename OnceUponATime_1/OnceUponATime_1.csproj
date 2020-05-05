@@ -114,6 +114,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="View\Rounder.cs" />
+    <Compile Include="View\ScreenForEnterName.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="MyForm.resx">
       <DependentUpon>MyForm.cs</DependentUpon>
     </EmbeddedResource>

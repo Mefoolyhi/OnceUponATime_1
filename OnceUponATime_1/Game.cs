@@ -54,11 +54,13 @@ namespace OnceUponATime_1
         public event Action NoPlace;
         public event Action StatesUpdeted;
         public event Action NoKeys;
+        public event Action NameEntering;
         private void SayNoSerie() => NoSerie?.Invoke();
         private void GetDailyGift() => GetGift?.Invoke();
         private void SayNoPlace() => NoPlace?.Invoke();
         private void UpdateStates() => StatesUpdeted?.Invoke();
         private void SayNoKeys() => NoKeys?.Invoke();
+        private void EnterName() => NameEntering?.Invoke();
 
         Task<List<Story>> LoadingInThread()
         {
@@ -159,6 +161,16 @@ namespace OnceUponATime_1
             CurrentPhrase = Phrases.First();
             CurrentPerson = DecodeName(CurrentPhrase.Person);
             StageChanged(GameStage.Game);
+            if ((story.CurrentSeason == 0 ||
+                (story.CurrentSeason == 0 && story.CurrentSeries == 0)))
+            {
+                EnterName();
+            }
+        }
+
+        public void SetName(string name)
+        {
+            story.Hero.Name = name;
         }
 
         public void GetNextPhrase()

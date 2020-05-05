@@ -84,7 +84,7 @@ namespace OnceUponATime_1
                 Location = new Point(Size.Width - 32, 2),
             };
             Controls.Add(ExitButton);
-            ExitButton.Button.Click += ExitButton_Click;
+            ExitButton.Click += ExitButton_Click;
         }
 
         public MyMessageBox(string labelText, string mainText)
@@ -137,7 +137,7 @@ namespace OnceUponATime_1
                 Location = new Point(Size.Width - 32, 2),
             };
             Controls.Add(ExitButton);
-            ExitButton.Button.Click += ExitButton_Click;
+            ExitButton.Click += ExitButton_Click;
         }
 
         private void ExitButton_Click(object sender, EventArgs e) => Hide();

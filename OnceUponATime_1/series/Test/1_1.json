@@ -15,7 +15,7 @@
       }
     ],
     "SceneType": "General",
-    "Background": "Test"
+    "Background": "background"
   },
   {
     "Dialogues": [
@@ -29,7 +29,7 @@
       }
     ],
     "SceneType": "Logic",
-    "Background": "Test"
+    "Background": "background"
   },
   {
     "Dialogues": [
@@ -43,10 +43,10 @@
       }
     ],
     "SceneType": "Intuitional",
-    "Background": "Test"
+    "Background": "background"
   },
   {
-    "Background": "images/Test/background.png",
+    "Background": "background",
     "Hero": "MainHero",
     "Choices": [
       {
@@ -70,7 +70,7 @@
             }
           ],
           "SceneType": "Love",
-          "Background": "images/Test/background.png"
+          "Background": "background"
         }
       },
       {
@@ -95,7 +95,7 @@
             }
           ],
           "SceneType": "Love",
-          "Background": "images/Test/background.png"
+          "Background": "background"
         }
       }
     ]

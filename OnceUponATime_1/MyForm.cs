@@ -26,7 +26,7 @@ namespace OnceUponATime_1
             ExitButton = new MyExitButton
             {
                 Size = new Size(30, 30),
-                Location = new Point(Size.Width - 32, 2),
+                Location = new Point(Size.Width - 31, 1),
             };
 
             loadScreen = new LoadScreen
@@ -65,10 +65,10 @@ namespace OnceUponATime_1
 
             SizeChanged += (sender, args) =>
             {
-                ExitButton.Location = new Point(Size.Width - 32, 2);
+                ExitButton.Location = new Point(Size.Width - ExitButton.Size.Width - 1, 1);
             };
 
-            ExitButton.Button.Click += ExitButton_Click;
+            ExitButton.Click += ExitButton_Click;
             game.StageChanged += Game_OnStageChanged;
             ShowLoadScreen();
 

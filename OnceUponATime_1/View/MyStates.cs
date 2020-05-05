@@ -11,7 +11,7 @@ namespace OnceUponATime_1
     {
         public Label Hearts { get; set; }
         public Label Keys { get; set; }
-        private PictureBox States;
+        public PictureBox States { get; }
         private Color statesColor;
 
         public MyStates()
@@ -46,7 +46,7 @@ namespace OnceUponATime_1
             States = new PictureBox
             {
                 Size = this.Size,
-                Image = Loader.LoadImage("game images", "states"),
+                Image = Loader.LoadImagePNG("game images", "states"),
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 

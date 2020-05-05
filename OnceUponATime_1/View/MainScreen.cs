@@ -111,14 +111,14 @@ namespace OnceUponATime_1
             }
 
             this.game = game;
-            image.Image = Loader.LoadImage(game.StoryName, game.StoryName);
+            image.Image = Loader.LoadImagePNG(game.StoryName, game.StoryName);
 
             buttonPlay.Click += StartButton_Click;
-            rightButton.Button.Click += RightButton_Click;
-            leftButton.Button.Click += LeftButton_Click;
+            rightButton.Click += RightButton_Click;
+            leftButton.Click += LeftButton_Click;
             messageNoSerie.MainButton.Click += NoSerieButton_Click;
             messageYouGetGift.MainButton.Click += GetGiftButton_Click;
-            messageYouGetGift.ExitButton.Button.Click += GetGiftButton_Click;
+            messageYouGetGift.ExitButton.Click += GetGiftButton_Click;
             messageNotSpaceForKeys.MainButton.Click += NoSpaceButton_Click;
             messageNotKeys.MainButton.Click += NoKeysButton_Click;
             game.NoSerie += ShowNoSerieMessage;
@@ -140,14 +140,14 @@ namespace OnceUponATime_1
         private void RightButton_Click(object sender, EventArgs e)
         {
             game.GetNextStory();
-            image.Image = Loader.LoadImage(game.StoryName, game.StoryName);
+            image.Image = Loader.LoadImagePNG(game.StoryName, game.StoryName);
             Invalidate();
         }
 
         private void LeftButton_Click(object sender, EventArgs e)
         {
             game.GetPreviousStory();
-            image.Image = Loader.LoadImage(game.StoryName, game.StoryName);
+            image.Image = Loader.LoadImagePNG(game.StoryName, game.StoryName);
             Invalidate();
         }
 

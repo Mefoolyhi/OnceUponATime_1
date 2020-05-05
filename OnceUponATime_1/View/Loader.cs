@@ -6,7 +6,7 @@ namespace OnceUponATime_1
 {
     public class Loader
     {
-        public static Image LoadImage(string dirName, string pictureName)
+        public static Image LoadImagePNG(string dirName, string pictureName)
         {
             try
             {
@@ -19,16 +19,16 @@ namespace OnceUponATime_1
             }
         }
 
-        public static Image LoadImage2(string dirName, string pictureName)
+        public static Image LoadImageJPG(string dirName, string pictureName)
         {
             try
             {
-                var image = Image.FromFile($@"images\{dirName}\{pictureName}");
+                var image = Image.FromFile($@"images\{dirName}\{pictureName}.jpg");
                 return image;
             }
             catch
             {
-                throw new FileNotFoundException($@"В каталоге images не удалось найти файл {dirName}\{pictureName}");
+                throw new FileNotFoundException($@"В каталоге images не удалось найти файл {dirName}\{pictureName}.jpg");
             }
         }
 

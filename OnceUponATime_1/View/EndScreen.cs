@@ -59,7 +59,7 @@ namespace OnceUponATime_1
             
             heart = new PictureBox
             {
-                Image = Loader.LoadImage("game images", "heart"),
+                Image = Loader.LoadImagePNG("game images", "heart"),
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 BackColor = rectColor
             };
