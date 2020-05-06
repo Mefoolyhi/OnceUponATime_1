@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
@@ -22,11 +23,14 @@ namespace OnceUponATime_1
         private Story _story { get; set; }
         private List<Scene> _scenes;
         private List<Phrase> _phrases;
-        private int _currentSceneNumber;
         private int _currentPhraseNumber;
-        public Scene CurrentScene;
         public Phrase CurrentPhrase;
         public string CurrentPerson;
+        public Choice CurrentChoice;
+        private List<Choice> _choices;
+        private int _currentChoiceNumber;
+        private int _currentSceneNumber;
+        public Scene CurrentScene;
         private bool _isEndOfSerie;
 
         public Game()
@@ -59,6 +63,9 @@ namespace OnceUponATime_1
         public event Action NoPlace;
         public event Action StatesUpdated;
         public event Action NoKeys;
+        public event Action SceneIsLogic;
+        public event Action SceneIsIntuitional;
+        public event Action YouCheated;
         public event Action NameEntering;
         private void SayNoSerie() => NoSerie?.Invoke();
         private void GetDailyGift() => GetGift?.Invoke();
@@ -162,11 +169,9 @@ namespace OnceUponATime_1
 
             CurrentScene = _scenes[_currentSceneNumber];
             _phrases = CurrentScene.Dialogues;
-            CurrentPhrase = _phrases[_currentPhraseNumber];
-            CurrentPerson = DecodeName(CurrentPhrase.Person);
             StageChanged(GameStage.Game);
-            if ((_story.CurrentSeason == 0 ||
-                 (_story.CurrentSeason == 0 && _story.CurrentSeries == 0)))
+            if (_story.CurrentSeason == 0 ||
+                 _story.CurrentSeason == 0 && _story.CurrentSeries == 0)
             {
                 EnterName();
             }
@@ -186,6 +191,18 @@ namespace OnceUponATime_1
             _story.Hero.Name = name;
         }
 
+        public void GetNextChoice()
+        {
+            if (_currentChoiceNumber == _choices.Count - 1)
+            {
+                GetNextScene();
+                return;
+            }
+
+            _currentChoiceNumber++;
+            CurrentChoice = _choices[_currentChoiceNumber];
+        }
+
         public void GetNextPhrase()
         {
             if (_currentPhraseNumber == _phrases.Count - 1)
@@ -198,6 +215,8 @@ namespace OnceUponATime_1
             CurrentPhrase = _phrases[_currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
         }
+
+        public bool IsChoiceScene => CurrentScene.Choices != null;
 
         private void GetNextScene()
         {
@@ -212,16 +231,14 @@ namespace OnceUponATime_1
             switch (CurrentScene.SceneType)
             {
                 case SceneType.Logic:
-                    Console.WriteLine("Path of Logic");
+                    SceneIsLogic?.Invoke();
                     break;
                 case SceneType.Intuitional:
-                    Console.WriteLine("Path of Intuition");
+                    SceneIsIntuitional?.Invoke();
                     break;
             }
-            _currentPhraseNumber = 0;
             _phrases = CurrentScene.Dialogues;
-            CurrentPhrase = _phrases[_currentPhraseNumber];
-            CurrentPerson = DecodeName(CurrentPhrase.Person);
+            _choices = CurrentScene.Choices;
         }
 
         public void End()
@@ -246,8 +263,7 @@ namespace OnceUponATime_1
             Player.AddDiamonds(_diamondsDelta);
             if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
                 _story.Hero.Name = "MainHero";
-            _currentPhraseNumber = 0;
-            _currentPhraseNumber = 0;
+            _currentSceneNumber = 0;
             _logicDelta = 0;
             _diamondsDelta = 0;
             _intuitionDelta = 0;
