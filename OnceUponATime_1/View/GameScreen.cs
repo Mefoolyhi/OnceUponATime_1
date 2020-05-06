@@ -125,6 +125,11 @@ namespace OnceUponATime_1
             }
 
             _game = game;
+            //_game.CurrentScene - возьми, все что надо
+            //DecodeName теперь публичный 
+            //    GetNext();
+            //if (пришел выбор)
+            //    UpdateChoiceSuccess(index);
             game.NameEntering += ShowEnteringScreen;
             _screenForEnterName.ButtonPlay.Click += GetName;
             _menuButton.Click += ShowMenu;

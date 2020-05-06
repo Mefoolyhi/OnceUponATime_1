@@ -1,44 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
     public class Game
     {
         public Player Player;
-        private readonly JsonParser<List<Scene>> _scenesParser;
-        private int _logicDelta = 0;
-        private int _diamondsDelta = 0;
-        private int _intuitionDelta = 0;
-
-
-        private List<Story> _stories;
         public int StoriesNumber => _stories.Count;
-        private int _currentStoryNumber;
         public string StoryName;
+        public Scene CurrentScene { get; private set; }
+        
+        
+        private Queue<Scene> _storyQueue;
+        private IEnumerator<Phrase> _enumerator;
+        private readonly JsonParser<List<Scene>> _scenesParser;
+        private int _logicDelta;
+        private int _diamondsDelta;
+        private int _intuitionDelta;
+        private List<Story> _stories;
+        private int _currentStoryNumber;
         private Story _story { get; set; }
         private List<Scene> _scenes;
-        private List<Phrase> _phrases;
-        private int _currentPhraseNumber;
-        public Phrase CurrentPhrase;
-        public string CurrentPerson;
         private bool _cheated;
         private List<Choice> _choices;
-        private int _currentChoiceNumber;
         private int _currentSceneNumber;
-        public Scene CurrentScene;
-        private bool _isEndOfSerie;
-
-
-        public List<Choice> CurrentChoices => _choices.ToList();
-
+        
         public Game()
         {
             _scenesParser = new JsonParser<List<Scene>>();
+            _storyQueue = new Queue<Scene>();
         }
 
         public int LogicDelta => _logicDelta;
@@ -51,7 +43,7 @@ namespace OnceUponATime_1
             StageChanged?.Invoke(stage);
         }
         
-        private string DecodeName(string name)
+        public string DecodeName(string name)
         {
             var person = name;
             if (person.Equals("MainHero"))
@@ -170,10 +162,6 @@ namespace OnceUponATime_1
                 ChangeStage(GameStage.Main);
                 return;
             }
-
-            CurrentScene = _scenes[_currentSceneNumber];
-            _phrases = CurrentScene.Dialogues;
-            _choices = CurrentScene.Choices;
             _cheated = false;
             StageChanged(GameStage.Game);
             if (_story.CurrentSeason == 0)
@@ -206,72 +194,79 @@ namespace OnceUponATime_1
             _logicDelta += selectedOption.LogicDelta;
             _intuitionDelta += selectedOption.IntuitionalDelta;
             _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
+            foreach (var nextScene in selectedOption.NextScenes)
+                AddScene(nextScene);
+            SetNextScene();
             return true;
-            
-            // foreach (var nextScene in selectedOption.NextScenes)
-            //     PlayScene(nextScene);
+        }
+
+        private void AddScene(Scene scene)
+        {
+            _storyQueue.Enqueue(scene);
+        }
+
+        private void SetNextScene()
+        {
+            _cheated = false;
+            if (_storyQueue.Count == 0)
+                AddNextScene();
+            CurrentScene = _storyQueue.Dequeue();
+            if (CurrentScene.Choices != null)
+            {
+                _choices = CurrentScene.Choices;
+                _enumerator = null;
+            }
+            else
+                _enumerator = CurrentScene.Dialogues.GetEnumerator();
+        }
+
+        private Phrase GetNextPhrase()
+        {
+            if (_enumerator == null)
+                return null;
+            return _enumerator.MoveNext() ? _enumerator.Current : null;
         }
         
-        public void GetChoices()
+        public object GetNext()
         {
-            if (_currentChoiceNumber == _choices.Count - 1)
+            var phrase = GetNextPhrase();
+            while (phrase == null)
             {
-                GetNextScene();
-                return;
-            }
-            CurrentPerson = DecodeName(CurrentScene.Hero);
-        }
-
-        public void GetNextPhrase()
-        {
-            if (_currentPhraseNumber == _phrases.Count - 1)
-            {
+                if (_enumerator == null)
+                    return _choices;
+                
                 if (_cheated)
                     YouCheated?.Invoke();
-                GetNextScene();
-                return;
+                SetNextScene();
+                phrase = GetNextPhrase();
             }
-
-            _currentPhraseNumber++;
-            CurrentPhrase = _phrases[_currentPhraseNumber];
-            CurrentPerson = DecodeName(CurrentPhrase.Person);
             if (CurrentScene.SceneType == SceneType.Love &&
-                !CurrentPerson.Equals(_story.Hero.Name) &&
-                !CurrentPerson.Equals(_story.Hero.MainLover) &&
+                !phrase.Person.Equals(_story.Hero.Name) &&
+                !phrase.Person.Equals(_story.Hero.MainLover) &&
                 _story.Hero.MaxSympathy >= 10)
                 _cheated = true;
+            return phrase;
         }
 
-        public bool IsChoiceScene => CurrentScene.Choices != null;
-
-        private void GetNextScene()
+        private void AddNextScene()
         {
-            if (_currentSceneNumber == _scenes.Count - 1)
-            {
-                _isEndOfSerie = true;
-                return;
-            }
-            
-
-            _currentSceneNumber++;
-            CurrentScene = _scenes[_currentSceneNumber];
-            
-            while ((CurrentScene.SceneType == SceneType.Logic &&
-                    _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
-                   (CurrentScene.SceneType == SceneType.Intuitional &&
-                    _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta))
+            Scene currentScene;
+            do
             {
                 if (_currentSceneNumber == _scenes.Count - 1)
                 {
-                    _isEndOfSerie = true;
+                    EndSerie();
                     return;
                 }
-            
-
+                
                 _currentSceneNumber++;
-                CurrentScene = _scenes[_currentSceneNumber];
-            }
-            switch (CurrentScene.SceneType)
+                currentScene = _scenes[_currentSceneNumber];
+
+            } while ((currentScene.SceneType == SceneType.Logic &&
+                      _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
+                     (currentScene.SceneType == SceneType.Intuitional &&
+                      _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta));
+            switch (currentScene.SceneType)
             {
                 case SceneType.Logic:
                     SceneIsLogic?.Invoke();
@@ -280,9 +275,7 @@ namespace OnceUponATime_1
                     SceneIsIntuitional?.Invoke();
                     break;
             }
-            _phrases = CurrentScene.Dialogues;
-            _choices = CurrentScene.Choices;
-            _cheated = false;
+           AddScene(currentScene);
         }
 
         public void End()
@@ -308,6 +301,8 @@ namespace OnceUponATime_1
             if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
                 _story.Hero.Name = "MainHero";
             _currentSceneNumber = 0;
+            _storyQueue = new Queue<Scene>();
+            _enumerator = null;
             _logicDelta = 0;
             _diamondsDelta = 0;
             _intuitionDelta = 0;
