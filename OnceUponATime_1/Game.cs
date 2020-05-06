@@ -26,12 +26,15 @@ namespace OnceUponATime_1
         private int _currentPhraseNumber;
         public Phrase CurrentPhrase;
         public string CurrentPerson;
-        public Choice CurrentChoice;
+        private bool _cheated;
         private List<Choice> _choices;
         private int _currentChoiceNumber;
         private int _currentSceneNumber;
         public Scene CurrentScene;
         private bool _isEndOfSerie;
+
+
+        public List<Choice> CurrentChoices => _choices.ToList();
 
         public Game()
         {
@@ -63,6 +66,7 @@ namespace OnceUponATime_1
         public event Action NoPlace;
         public event Action StatesUpdated;
         public event Action NoKeys;
+        public event Action NoDiamonds;
         public event Action SceneIsLogic;
         public event Action SceneIsIntuitional;
         public event Action YouCheated;
@@ -169,12 +173,11 @@ namespace OnceUponATime_1
 
             CurrentScene = _scenes[_currentSceneNumber];
             _phrases = CurrentScene.Dialogues;
+            _choices = CurrentScene.Choices;
+            _cheated = false;
             StageChanged(GameStage.Game);
-            if (_story.CurrentSeason == 0 ||
-                 _story.CurrentSeason == 0 && _story.CurrentSeries == 0)
-            {
+            if (_story.CurrentSeason == 0)
                 EnterName();
-            }
         }
         
         public void EndSerie()
@@ -191,22 +194,40 @@ namespace OnceUponATime_1
             _story.Hero.Name = name;
         }
 
-        public void GetNextChoice()
+        public bool UpdateChoiceSuccess(int choiceIndex)
+        {
+            var selectedOption = _choices[choiceIndex];
+            if (!Player.TryRemoveDiamonds(selectedOption.DiamondDelta))
+            {
+                NoDiamonds?.Invoke();
+                return false;
+            }
+            _diamondsDelta += selectedOption.DiamondDelta;
+            _logicDelta += selectedOption.LogicDelta;
+            _intuitionDelta += selectedOption.IntuitionalDelta;
+            _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
+            return true;
+            
+            // foreach (var nextScene in selectedOption.NextScenes)
+            //     PlayScene(nextScene);
+        }
+        
+        public void GetChoices()
         {
             if (_currentChoiceNumber == _choices.Count - 1)
             {
                 GetNextScene();
                 return;
             }
-
-            _currentChoiceNumber++;
-            CurrentChoice = _choices[_currentChoiceNumber];
+            CurrentPerson = DecodeName(CurrentScene.Hero);
         }
 
         public void GetNextPhrase()
         {
             if (_currentPhraseNumber == _phrases.Count - 1)
             {
+                if (_cheated)
+                    YouCheated?.Invoke();
                 GetNextScene();
                 return;
             }
@@ -214,6 +235,11 @@ namespace OnceUponATime_1
             _currentPhraseNumber++;
             CurrentPhrase = _phrases[_currentPhraseNumber];
             CurrentPerson = DecodeName(CurrentPhrase.Person);
+            if (CurrentScene.SceneType == SceneType.Love &&
+                !CurrentPerson.Equals(_story.Hero.Name) &&
+                !CurrentPerson.Equals(_story.Hero.MainLover) &&
+                _story.Hero.MaxSympathy >= 10)
+                _cheated = true;
         }
 
         public bool IsChoiceScene => CurrentScene.Choices != null;
@@ -225,9 +251,26 @@ namespace OnceUponATime_1
                 _isEndOfSerie = true;
                 return;
             }
+            
 
             _currentSceneNumber++;
             CurrentScene = _scenes[_currentSceneNumber];
+            
+            while ((CurrentScene.SceneType == SceneType.Logic &&
+                    _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
+                   (CurrentScene.SceneType == SceneType.Intuitional &&
+                    _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta))
+            {
+                if (_currentSceneNumber == _scenes.Count - 1)
+                {
+                    _isEndOfSerie = true;
+                    return;
+                }
+            
+
+                _currentSceneNumber++;
+                CurrentScene = _scenes[_currentSceneNumber];
+            }
             switch (CurrentScene.SceneType)
             {
                 case SceneType.Logic:
@@ -239,6 +282,7 @@ namespace OnceUponATime_1
             }
             _phrases = CurrentScene.Dialogues;
             _choices = CurrentScene.Choices;
+            _cheated = false;
         }
 
         public void End()
