@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class LoadScreen : Control
+    public sealed class LoadScreen : UserControl
     {
         private Game _game;
 
@@ -64,14 +63,6 @@ namespace OnceUponATime_1
                 return;
 
             _game = game;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            var graphics = e.Graphics;
-            graphics.SmoothingMode = SmoothingMode.HighQuality;
         }
     }
 }

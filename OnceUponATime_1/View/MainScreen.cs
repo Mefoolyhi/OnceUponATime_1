@@ -4,12 +4,12 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class MainScreen : Control 
+    public sealed class MainScreen : UserControl 
     {
         private Game _game;
         private readonly MyButton _buttonPlay;
-        private readonly MyArrowButton _leftButton;
-        private readonly MyArrowButton _rightButton;
+        private readonly MyControlButton _leftButton;
+        private readonly MyControlButton _rightButton;
         private readonly MyStates _states;
         private readonly PictureBox _image;
         private readonly MyMessageBox _messageNoSerie;
@@ -28,8 +28,15 @@ namespace OnceUponATime_1
 
             BackColor = ColorTranslator.FromHtml("#DACEED");
             _states = new MyStates();
-            _rightButton = new MyArrowButton(false);
-            _leftButton = new MyArrowButton(true);
+            _rightButton = new MyControlButton(Loader.LoadImagePng("game images", "right"))
+            {
+                Size = new Size(150, 160),
+            };
+
+            _leftButton = new MyControlButton(Loader.LoadImagePng("game images", "left"))
+            {
+                Size = new Size(150, 160),
+            };
 
             _buttonPlay = new MyButton
             {
@@ -59,7 +66,6 @@ namespace OnceUponATime_1
             _image = new PictureBox
             {
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                Location = new Point((ClientSize.Width - 1000) / 2, (int)(_states.Location.Y + 1.5 * _states.Size.Height))
             };
 
             Controls.Add(_states);
@@ -79,22 +85,22 @@ namespace OnceUponATime_1
 
             SizeChanged += (sender, args) =>
             {
-                _buttonPlay.Location = new Point((ClientSize.Width - _buttonPlay.Size.Width) / 2,
-                    (int)(ClientSize.Height - 1.5 * _buttonPlay.Size.Height));
-                _states.Location = new Point((ClientSize.Width - _states.Size.Width) / 2,
+                _buttonPlay.Location = new Point((Width - _buttonPlay.Size.Width) / 2,
+                    (int)(Height - 1.5 * _buttonPlay.Size.Height));
+                _states.Location = new Point((Width - _states.Size.Width) / 2,
                     (int)(0.5 * _states.Size.Height));
-                _image.Size = new Size(Width - 650,
+                _image.Size = new Size((int)(Width - (6.5 * (_rightButton.Width + _leftButton.Location.X)) / 2),
                     (int)(Height - _states.Height * 2.5 - _buttonPlay.Height * 2));
-                _image.Location = new Point((ClientSize.Width - _image.Size.Width) / 2,
+                _image.Location = new Point((Width - _image.Size.Width) / 2,
                     (int)(_states.Location.Y + 1.6 * _states.Size.Height));
-                _messageYouGetGift.Location = new Point((ClientSize.Width - _messageNoSerie.Size.Width) / 2,
-                    (ClientSize.Height - _messageNoSerie.Size.Height) / 2);
-                _messageNotSpaceForKeys.Location = new Point((ClientSize.Width - _messageNoSerie.Size.Width) / 2,
-                    (ClientSize.Height - _messageNoSerie.Size.Height) / 2);
-                _messageNoSerie.Location = new Point((ClientSize.Width - _messageNoSerie.Size.Width) / 2,
-                    (ClientSize.Height - _messageNoSerie.Size.Height) / 2);
-                _messageNotKeys.Location = new Point((ClientSize.Width - _messageNoSerie.Size.Width) / 2,
-                    (ClientSize.Height - _messageNoSerie.Size.Height) / 2);
+                _messageYouGetGift.Location = new Point((Width - _messageNoSerie.Size.Width) / 2,
+                    (Height - _messageNoSerie.Size.Height) / 2);
+                _messageNotSpaceForKeys.Location = new Point((Width - _messageNoSerie.Size.Width) / 2,
+                    (Height - _messageNoSerie.Size.Height) / 2);
+                _messageNoSerie.Location = new Point((Width - _messageNoSerie.Size.Width) / 2,
+                    (Height - _messageNoSerie.Size.Height) / 2);
+                _messageNotKeys.Location = new Point((Width - _messageNoSerie.Size.Width) / 2,
+                    (Height - _messageNoSerie.Size.Height) / 2);
                 _rightButton.Location = new Point((int)(Width - _rightButton.Size.Width * 1.3),
                     (Height - _rightButton.Height) / 2);
                 _leftButton.Location = new Point((int)(_leftButton.Size.Width * 0.3),
@@ -126,7 +132,7 @@ namespace OnceUponATime_1
             game.NoPlace += ShowNoPlaceMessage;
             game.NoKeys += ShowNoKeysMessage;
             game.StatesUpdated += UpdateStates;
-            _states.Hearts.Text = game.Player.Diamonds.ToString();
+            _states.Diamonds.Text = game.Player.Diamonds.ToString();
             _states.Keys.Text = game.Player.Keys.ToString();
 
 
@@ -151,7 +157,7 @@ namespace OnceUponATime_1
 
         private void UpdateStates()
         {
-            _states.Hearts.Text = _game.Player.Diamonds.ToString();
+            _states.Diamonds.Text = _game.Player.Diamonds.ToString();
             _states.Keys.Text = _game.Player.Keys.ToString();
             Invalidate();
         }

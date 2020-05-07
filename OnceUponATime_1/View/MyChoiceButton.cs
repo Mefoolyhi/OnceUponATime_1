@@ -5,9 +5,12 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class MyButton : UserControl
+    public sealed class MyChoiceButton : UserControl
     {
-        private readonly StringFormat _sf = new StringFormat();
+        private readonly StringFormat _sfText = new StringFormat();
+        private readonly StringFormat _sfPrice = new StringFormat();
+        private readonly string _choiceText;
+        private readonly int _price;
         private bool _mouseEntered;
         private bool _mousePressed;
 
@@ -33,7 +36,7 @@ namespace OnceUponATime_1
             }
         }
 
-        public MyButton()
+        public MyChoiceButton(string text, int price)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
                 | ControlStyles.OptimizedDoubleBuffer
@@ -47,8 +50,12 @@ namespace OnceUponATime_1
             BackColor = ColorTranslator.FromHtml("#8C64BF");
             ForeColor = ColorTranslator.FromHtml("#1D132B");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
-            _sf.Alignment = StringAlignment.Center;
-            _sf.LineAlignment = StringAlignment.Center;
+            _choiceText = text;
+            _price = price;
+            _sfText.Alignment = StringAlignment.Near;
+            _sfText.LineAlignment = StringAlignment.Center;
+            _sfPrice.Alignment = StringAlignment.Far;
+            _sfPrice.LineAlignment = StringAlignment.Center;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -84,7 +91,16 @@ namespace OnceUponATime_1
                 graphics.FillPath(new SolidBrush(BackColor), rectPath);
             }
 
-            graphics.DrawString(Text, Font, new SolidBrush(ForeColor), rect, _sf);
+            var indent = 10;
+            var textRect = new Rectangle(rect.X + indent, rect.Y, (int)((rect.Width - indent) * 0.8), rect.Height);
+            var priceRect = new Rectangle(rect.X + textRect.Width + indent, rect.Y, (int)((rect.Width - indent) * 0.1), rect.Height);
+            graphics.DrawString(_choiceText, Font, new SolidBrush(ForeColor), textRect, _sfText);
+            if (_price != 0)
+            {
+                graphics.DrawString(_price.ToString(), Font, new SolidBrush(ForeColor), priceRect, _sfPrice);
+                graphics.DrawImage(Loader.LoadImagePng("game images", "heart"),
+                    rect.X + textRect.Width + priceRect.Width + indent, (rect.Height - 38) / 2, 40, 38);
+            }
         }
 
         protected override void OnMouseEnter(EventArgs e)

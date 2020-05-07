@@ -5,17 +5,17 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public class EndScreen : Control
+    public class EndScreen : UserControl
     {
         private Game _game;
-        private MyButton _continueButton;
-        private MyStates _states;
-        private Label _text;
-        private Label _numbers;
-        private PictureBox _heart;
+        private readonly MyButton _continueButton;
+        private readonly MyStates _states;
+        private readonly Label _text;
+        private readonly Label _numbers;
+        private readonly PictureBox _heart;
         private Rectangle _rect;
-        private Color _rectColor;
-        private int _roundingPercent = 3;
+        private readonly Color _rectColor;
+        private readonly int _roundingPercent = 3;
         public EndScreen()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
@@ -93,40 +93,30 @@ namespace OnceUponATime_1
             graphics.SmoothingMode = SmoothingMode.HighQuality;
             graphics.Clear(Parent.BackColor);
 
-            var roundingValue = 0.1F;
-            if (_roundingPercent > 0)
-            {
-                roundingValue = Height / 100F * _roundingPercent;
-            }
+            var roundingValue = Height / 100F * _roundingPercent;
 
             var rectPath = Rounder.MakeRoundedRectangle(_rect, roundingValue);
-
             graphics.DrawPath(new Pen(_rectColor), rectPath);
             graphics.FillPath(new SolidBrush(_rectColor), rectPath);
         }
         public void Configure(Game game)
         {
-            if (this._game != null)
+            if (_game != null)
             {
                 UpdateStates();
                 return;
             }
 
-            this._game = game;
-
+            _game = game;
             _continueButton.Click += EndButton_Click;
-            _states.Hearts.Text = game.Player.Diamonds.ToString();
-            _states.Keys.Text = game.Player.Keys.ToString();
-            _numbers.Text = $"{game.Story.Hero.Logic} + {game.LogicDelta}\n\n{game.Story.Hero.Intuition} + {game.IntuitionDelta}\n\n+5";
+            UpdateStates();
         }
-        private void EndButton_Click(object sender, EventArgs e)
-        {
-            _game.ReturnToMainScreen();
-        }
+        private void EndButton_Click(object sender, EventArgs e) => _game.ReturnToMainScreen();
+
         private void UpdateStates()
         {
-            _numbers.Text = $"{_game.Story.Hero.Logic} + {_game.LogicDelta}\n\n{_game.Story.Hero.Intuition} + {_game.IntuitionDelta}\n\n+25";
-            _states.Hearts.Text = _game.Player.Diamonds.ToString();
+            _numbers.Text = $"{_game.Story.Hero.Logic} + {_game.LogicDelta}\n\n{_game.Story.Hero.Intuition} + {_game.IntuitionDelta}\n\n+5";
+            _states.Diamonds.Text = _game.Player.Diamonds.ToString();
             _states.Keys.Text = _game.Player.Keys.ToString();
             Invalidate();
         }

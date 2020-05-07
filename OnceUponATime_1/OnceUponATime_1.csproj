@@ -80,23 +80,20 @@
     <Compile Include="CoreEntities\GameStage.cs" />
     <Compile Include="JsonParser.cs" />
     <Compile Include="View\EndScreen.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\GameScreen.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\Loader.cs" />
     <Compile Include="View\LoadScreen.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\MainScreen.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="View\MyArrowButton.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\MyButton.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MyForm.cs">
       <SubType>Form</SubType>
@@ -104,21 +101,24 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StoryTest.cs" />
+    <Compile Include="View\MyChoiceButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="View\MyControlButton.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\MyMenu.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\MyMessageBox.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\MyStates.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\Rounder.cs" />
     <Compile Include="View\ScreenForEnterName.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <EmbeddedResource Include="MyForm.resx">
       <DependentUpon>MyForm.cs</DependentUpon>

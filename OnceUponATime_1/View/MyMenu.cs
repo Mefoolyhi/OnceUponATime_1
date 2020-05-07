@@ -3,13 +3,13 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class MyMenu : Control
+    public sealed class MyMenu : UserControl
     {
-        public readonly MyButton Continue;
-        public readonly MyButton Restart;
-        public readonly MyButton Exit;
+        public readonly MyButton FirstButton;
+        public readonly MyButton SecondButton;
+        public readonly MyButton ThirdButton;
 
-        public MyMenu()
+        public MyMenu(string first, string second, string third)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
                 | ControlStyles.OptimizedDoubleBuffer
@@ -20,33 +20,33 @@ namespace OnceUponATime_1
             DoubleBuffered = true;
             Size = new Size(500, 450);
 
-            Continue = new MyButton
+            FirstButton = new MyButton
             {
                 Size = new Size(Width, Height /3),
                 Font = new Font("Palatino Linotype", 32, FontStyle.Bold),
-                Text = "Продолжить",
+                Text = first,
                 Location = new Point(0, 0)
         };
 
-            Restart = new MyButton
+            SecondButton = new MyButton
             {
                 Size = new Size(Width, Height / 3),
                 Font = new Font("Palatino Linotype", 32, FontStyle.Bold),
-                Text = "Пройти серию заново",
+                Text = second,
                 Location = new Point(0, Height / 3)
             };
 
-            Exit = new MyButton
+            ThirdButton = new MyButton
             {
                 Size = new Size(Width, Height / 3),
                 Font = new Font("Palatino Linotype", 32, FontStyle.Bold),
-                Text = "Выйти",
+                Text = third,
                 Location = new Point(0, 2 * Height / 3)
             };
 
-            Controls.Add(Continue);
-            Controls.Add(Restart);
-            Controls.Add(Exit);
+            Controls.Add(FirstButton);
+            Controls.Add(SecondButton);
+            Controls.Add(ThirdButton);
         }
     }
 }

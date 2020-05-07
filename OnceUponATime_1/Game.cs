@@ -9,23 +9,22 @@ namespace OnceUponATime_1
     {
         public Player Player;
         public int StoriesNumber => _stories.Count;
-        public string StoryName;
         public Scene CurrentScene { get; private set; }
-        
-        
+        public int LogicDelta { get; private set; }
+        public int IntuitionDelta { get; private set; }
+        private Story _story { get; set; }
+        public string StoryName;
         private Queue<Scene> _storyQueue;
         private IEnumerator<Phrase> _enumerator;
         private readonly JsonParser<List<Scene>> _scenesParser;
-        private int _logicDelta;
         private int _diamondsDelta;
-        private int _intuitionDelta;
         private List<Story> _stories;
         private int _currentStoryNumber;
-        private Story _story { get; set; }
         private List<Scene> _scenes;
         private bool _cheated;
         private List<Choice> _choices;
-        private int _currentSceneNumber;
+        private int _currentSceneNumber = -1;
+        private bool _isEnd = false;
         
         public Game()
         {
@@ -33,15 +32,7 @@ namespace OnceUponATime_1
             _storyQueue = new Queue<Scene>();
         }
 
-        public int LogicDelta => _logicDelta;
-        public int IntuitionDelta => _intuitionDelta;
         public Story Story => _story;
-        public event Action<GameStage> StageChanged;
-
-        private void ChangeStage(GameStage stage)
-        {
-            StageChanged?.Invoke(stage);
-        }
         
         public string DecodeName(string name)
         {
@@ -63,12 +54,14 @@ namespace OnceUponATime_1
         public event Action SceneIsIntuitional;
         public event Action YouCheated;
         public event Action NameEntering;
+        public event Action<GameStage> StageChanged;
         private void SayNoSerie() => NoSerie?.Invoke();
         private void GetDailyGift() => GetGift?.Invoke();
         private void SayNoPlace() => NoPlace?.Invoke();
         private void UpdateStates() => StatesUpdated?.Invoke();
         private void SayNoKeys() => NoKeys?.Invoke();
         private void EnterName() => NameEntering?.Invoke();
+        private void ChangeStage(GameStage stage) => StageChanged?.Invoke(stage);
 
         Task<List<Story>> LoadingInThread()
         {
@@ -163,6 +156,7 @@ namespace OnceUponATime_1
                 return;
             }
             _cheated = false;
+            SetNextScene();
             StageChanged(GameStage.Game);
             if (_story.CurrentSeason == 0)
                 EnterName();
@@ -171,8 +165,7 @@ namespace OnceUponATime_1
         public void EndSerie()
         {
             ChangeStage(GameStage.Finished);
-            if (!_story.Hero.TrySetLogicIntuition(_logicDelta, _intuitionDelta))
-                Console.WriteLine("WARNING");
+            _story.Hero.TrySetLogicIntuition(LogicDelta, IntuitionDelta);
             Player.AddDiamonds(5);
             UpdateStates();
         }
@@ -191,8 +184,8 @@ namespace OnceUponATime_1
                 return false;
             }
             _diamondsDelta += selectedOption.DiamondDelta;
-            _logicDelta += selectedOption.LogicDelta;
-            _intuitionDelta += selectedOption.IntuitionalDelta;
+            LogicDelta += selectedOption.LogicDelta;
+            IntuitionDelta += selectedOption.IntuitionalDelta;
             _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
             foreach (var nextScene in selectedOption.NextScenes)
                 AddScene(nextScene);
@@ -210,6 +203,12 @@ namespace OnceUponATime_1
             _cheated = false;
             if (_storyQueue.Count == 0)
                 AddNextScene();
+            if (_storyQueue.Count == 0)
+            {
+                _isEnd = true;
+                EndSerie();
+                return;
+            }
             CurrentScene = _storyQueue.Dequeue();
             if (CurrentScene.Choices != null)
             {
@@ -238,6 +237,8 @@ namespace OnceUponATime_1
                 if (_cheated)
                     YouCheated?.Invoke();
                 SetNextScene();
+                if (_isEnd)
+                    return null;
                 phrase = GetNextPhrase();
             }
             if (CurrentScene.SceneType == SceneType.Love &&
@@ -255,7 +256,6 @@ namespace OnceUponATime_1
             {
                 if (_currentSceneNumber == _scenes.Count - 1)
                 {
-                    EndSerie();
                     return;
                 }
                 
@@ -263,9 +263,9 @@ namespace OnceUponATime_1
                 currentScene = _scenes[_currentSceneNumber];
 
             } while ((currentScene.SceneType == SceneType.Logic &&
-                      _story.Hero.Intuition + _intuitionDelta > _story.Hero.Logic + _logicDelta) ||
+                      _story.Hero.Intuition + IntuitionDelta > _story.Hero.Logic + LogicDelta) ||
                      (currentScene.SceneType == SceneType.Intuitional &&
-                      _story.Hero.Logic + _logicDelta >= _story.Hero.Intuition + _intuitionDelta));
+                      _story.Hero.Logic + LogicDelta >= _story.Hero.Intuition + IntuitionDelta));
             switch (currentScene.SceneType)
             {
                 case SceneType.Logic:
@@ -296,26 +296,28 @@ namespace OnceUponATime_1
 
         public void RestartSerie()
         {
-            _story.RollbackSeries();
-            Player.AddDiamonds(_diamondsDelta);
-            if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
-                _story.Hero.Name = "MainHero";
-            _currentSceneNumber = 0;
-            _storyQueue = new Queue<Scene>();
-            _enumerator = null;
-            _logicDelta = 0;
-            _diamondsDelta = 0;
-            _intuitionDelta = 0;
+            InterruptSerie();
             PlayGame();
         }
 
         public void ExitFromSerie()
         {
+            InterruptSerie();
+            ReturnToMainScreen();
+        }
+
+        private void InterruptSerie()
+        {
             _story.RollbackSeries();
             Player.AddDiamonds(_diamondsDelta);
             if (_story.CurrentSeason == 0 && _story.CurrentSeries == -1)
                 _story.Hero.Name = "MainHero";
-            ReturnToMainScreen();
+            _currentSceneNumber = -1;
+            _storyQueue = new Queue<Scene>();
+            _enumerator = null;
+            LogicDelta = 0;
+            _diamondsDelta = 0;
+            IntuitionDelta = 0;
         }
     }
 }

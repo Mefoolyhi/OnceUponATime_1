@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    sealed class MyStates : Control
+    sealed class MyStates : UserControl
     {
-        public Label Hearts { get; }
+        public Label Diamonds { get; }
         public Label Keys { get;}
         public PictureBox States { get; }
 
@@ -24,7 +24,7 @@ namespace OnceUponATime_1
             var statesColor = ColorTranslator.FromHtml("#AF89F0");
             Font = new Font("Palatino Linotype", 22, FontStyle.Bold);
 
-            Hearts = new Label
+            Diamonds = new Label
             {
                 BackColor = statesColor,
                 Location = new Point(Width / 3 - 15, Height / 4),
@@ -45,7 +45,7 @@ namespace OnceUponATime_1
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 
-            Controls.Add(Hearts);
+            Controls.Add(Diamonds);
             Controls.Add(Keys);
             Controls.Add(States);
         }

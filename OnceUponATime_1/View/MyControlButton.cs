@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class MyControlButton : Control
+    public sealed class MyControlButton : UserControl
     {
         private readonly PictureBox _button;
         private bool _mouseEntered;

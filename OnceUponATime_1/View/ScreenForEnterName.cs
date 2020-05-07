@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace OnceUponATime_1
 {
-    public sealed class ScreenForEnterName : Control
+    public sealed class ScreenForEnterName : UserControl
     {
         public new readonly TextBox Name;
         public readonly MyButton ButtonPlay;
