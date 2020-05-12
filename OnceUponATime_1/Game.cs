@@ -53,6 +53,11 @@ namespace OnceUponATime_1
         public event Action SceneIsLogic;
         public event Action SceneIsIntuitional;
         public event Action YouCheated;
+        public event Action<string> RelationshipsUpgraded;
+        public event Action<string> RelationshipsDestroyed;
+        public event Action<int> DiamondsTaken;
+        public event Action<int> LogicIncrease;
+        public event Action<int> IntuitionalIncreased;
         public event Action NameEntering;
         public event Action<GameStage> StageChanged;
         private void SayNoSerie() => NoSerie?.Invoke();
