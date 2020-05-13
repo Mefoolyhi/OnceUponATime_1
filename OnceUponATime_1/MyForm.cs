@@ -69,7 +69,7 @@ namespace OnceUponATime_1
 
             SizeChanged += (sender, args) =>
             {
-                _menuButton.Location = new Point(20, 20);
+                _menuButton.Location = new Point(Width - _menuButton.Width - 20, 20);
                 _menu.Location = new Point((Width - _menu.Width) / 2, (Height - _menu.Height) / 2);
             };
 

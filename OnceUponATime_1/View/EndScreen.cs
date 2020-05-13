@@ -46,7 +46,7 @@ namespace OnceUponATime_1
 
             _text = new Label
             {
-                Text = "Интуиция:\n\nЛогика:\n\nНаграда за прохождение серии:",
+                Text = "Логика:\n\nИнтуиция:\n\nНаграда за прохождение серии:",
                 Font = new Font("Palatino Linotype", 40),
                 BackColor = _rectColor
             };

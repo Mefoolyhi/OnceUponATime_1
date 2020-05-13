@@ -107,7 +107,7 @@ namespace OnceUponATime_1
                     _states.Location.Y + _states.Keys.Location.Y);
                 _screenForEnterName.Location = new Point(0, 0);
                 _screenForEnterName.Size = Size;
-                _menuButton.Location = new Point(20, 20);
+                _menuButton.Location = new Point(Width - _menuButton.Width - 20, 20);
                 _menu.Location = new Point((Width - _menu.Width) / 2, (Height - _menu.Height) / 2);
                 _messageNoDiamonds.Location = new Point((ClientSize.Width - _messageNoDiamonds.Size.Width) / 2,
                     (ClientSize.Height - _messageNoDiamonds.Size.Height) / 4);
@@ -124,7 +124,7 @@ namespace OnceUponATime_1
             var graphics = e.Graphics;
             graphics.SmoothingMode = SmoothingMode.HighQuality;
 
-            var rectImage = new Rectangle(50, Height - 500, 500, 500);
+            var rectImage = new Rectangle(Width - 550, Height - 600, 500, 650);
             graphics.DrawImage(_states.States.Image, new Rectangle(_states.Location, _states.Size));
             if (!(_person is null))
                 graphics.DrawImage(_person, rectImage);
@@ -132,7 +132,7 @@ namespace OnceUponATime_1
                 rectImage.Width = 0;
 
             var indent = 10;
-            var rectForPhrase = new Rectangle(rectImage.X + rectImage.Width, Height - 300, Width - rectImage.X - rectImage.Width - 50, 250);
+            var rectForPhrase = new Rectangle(50, Height - 300, Width - rectImage.Width - 100, 250);
             var roundingValue = Height / 100F * _roundingPercent;
             var rectPathPhrase = Rounder.MakeRoundedRectangle(rectForPhrase, roundingValue);
 
@@ -140,6 +140,8 @@ namespace OnceUponATime_1
             graphics.FillPath(new SolidBrush(ColorTranslator.FromHtml("#DACEED")), rectPathPhrase);
 
             var rectName = new Rectangle(rectForPhrase.X + indent, rectForPhrase.Y + indent, rectForPhrase.Width - 2 * indent, 40);
+            if (_person is null)
+                rectName.Height = 0;
             var rectPhrase = new Rectangle(rectName.X, rectName.Y + rectName.Height + indent,
                 rectForPhrase.Width - 2 * indent, rectForPhrase.Height - rectName.Height - 3 * indent);
 

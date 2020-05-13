@@ -13,7 +13,7 @@ namespace OnceUponATime_1
 
             var label = new Label
             {
-                Text = "Введите свое имя:",
+                Text = "Введите имя главной героини:",
                 Size = new Size(Width / 2, 60),
                 Font = new Font("Palatino Linotype", 22),
                 Location = new Point(3 * Width/ 4, Height / 2 - 60)
