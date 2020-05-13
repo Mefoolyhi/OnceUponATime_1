@@ -161,6 +161,12 @@ namespace OnceUponATime_1
                 return;
             }
             _cheated = false;
+            _currentSceneNumber = -1;
+            _storyQueue = new Queue<Scene>();
+            _enumerator = null;
+            LogicDelta = 0;
+            _diamondsDelta = 0;
+            IntuitionDelta = 0;
             SetNextScene();
             StageChanged(GameStage.Game);
             if (_story.CurrentSeason == 0)

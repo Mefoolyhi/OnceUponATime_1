@@ -228,7 +228,7 @@ namespace OnceUponATime_1
                     _person = null;
                 else
                     _person = Loader.LoadImagePng(_game.StoryName, _name);
-                _phrase = nextPhrase.Text;
+                _phrase = _game.DecodeName(nextPhrase.Text);
             }
             else if (next is List<Choice>)
             {
