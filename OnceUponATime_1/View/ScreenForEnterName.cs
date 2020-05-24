@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace OnceUponATime_1
@@ -7,6 +8,7 @@ namespace OnceUponATime_1
     {
         public new readonly TextBox Name;
         public readonly MyButton ButtonPlay;
+        public string StoryName;
         public ScreenForEnterName()
         {
             BackColor = ColorTranslator.FromHtml("#DACEED");
@@ -43,11 +45,22 @@ namespace OnceUponATime_1
             SizeChanged += (sender, args) =>
             {
                 label.Size = new Size(Width / 2, 60);
-                label.Location = new Point(Width / 4, Height / 2 - 60);
+                label.Location = new Point(Width / 4 + 250, Height / 2 - 60);
                 Name.Size = new Size(Width / 2, 60);
-                Name.Location = new Point(Width / 4, Height / 2);
-                ButtonPlay.Location = new Point((Width - ButtonPlay.Width) / 2, Height / 2 + 60);
+                Name.Location = new Point(Width / 4 + 250, Height / 2);
+                ButtonPlay.Location = new Point(Width / 4 + 250, Height / 2 + 60);
             };
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            var graphics = e.Graphics;
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+            var rect = new Rectangle(Width / 4 - 250, Height / 2 - 350, 500, 650);
+            var person = Loader.LoadImagePng(StoryName, "MainHero");
+            graphics.DrawImage(person, rect);
         }
     }
 }

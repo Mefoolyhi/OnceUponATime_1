@@ -195,8 +195,17 @@ namespace OnceUponATime_1
                 return false;
             }
             _diamondsDelta += selectedOption.DiamondDelta;
+            if (selectedOption.DiamondDelta != 0)
+                DiamondsTaken?.Invoke(selectedOption.DiamondDelta);
+
             LogicDelta += selectedOption.LogicDelta;
+            if (selectedOption.LogicDelta != 0)
+                LogicIncrease?.Invoke(selectedOption.LogicDelta);
+
             IntuitionDelta += selectedOption.IntuitionalDelta;
+            if (selectedOption.IntuitionalDelta != 0)
+                IntuitionalIncreased?.Invoke(selectedOption.IntuitionalDelta);
+
             _story.Hero.SetSympathies(selectedOption.RelationshipDelta);
             foreach (var nextScene in selectedOption.NextScenes)
                 AddScene(nextScene);

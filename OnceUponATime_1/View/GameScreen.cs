@@ -11,7 +11,6 @@ namespace OnceUponATime_1
     {
         private Game _game;
         private readonly StringFormat _nameSf = new StringFormat();
-        private readonly StringFormat _phraseSf = new StringFormat();
         private readonly MyStates _states;
         private Label Diamonds { get; }
         private Label Keys { get; }
@@ -26,6 +25,9 @@ namespace OnceUponATime_1
         private readonly MyMessageBox _messageNoDiamonds;
         private readonly MyMessageBox _messageLogicSchene;
         private readonly MyMessageBox _messageIntuitionalSchene;
+        private readonly MyMessageBox _messageStateIncrease;
+        private readonly MyMessageBox _messageTakenDiamonds;
+        private readonly MyMessageBox _messageYouCheated;
         private readonly int _roundingPercent = 3;
 
         public GameScreen()
@@ -44,9 +46,6 @@ namespace OnceUponATime_1
 
             _nameSf.Alignment = StringAlignment.Near;
             _nameSf.LineAlignment = StringAlignment.Near;
-
-            _phraseSf.Alignment = StringAlignment.Near;
-            _phraseSf.LineAlignment = StringAlignment.Near;
 
             Diamonds = new Label
             {
@@ -82,6 +81,15 @@ namespace OnceUponATime_1
             _messageIntuitionalSchene = new MyMessageBox("Путь интуиции", "");
             _messageIntuitionalSchene.Size = new Size(400, 60);
 
+            _messageStateIncrease = new MyMessageBox("", "");
+            _messageStateIncrease.Size = new Size(400, 60);
+
+            _messageTakenDiamonds = new MyMessageBox("", "");
+            _messageTakenDiamonds.Size = new Size(400, 60);
+
+            _messageYouCheated = new MyMessageBox("Вы изменили своей второй половинке", "");
+            _messageYouCheated.Size = new Size(400, 100);
+
             _menu = new MyMenu("Продолжить", "Пройти серию заново", "Выйти");
             _states = new MyStates();
             Controls.Add(_screenForEnterName);
@@ -92,11 +100,17 @@ namespace OnceUponATime_1
             Controls.Add(_messageNoDiamonds);
             Controls.Add(_messageLogicSchene);
             Controls.Add(_messageIntuitionalSchene);
+            Controls.Add(_messageStateIncrease);
+            Controls.Add(_messageTakenDiamonds);
+            Controls.Add(_messageYouCheated);
             _screenForEnterName.Hide();
             _menu.Hide();
             _messageNoDiamonds.Hide();
             _messageLogicSchene.Hide();
             _messageIntuitionalSchene.Hide();
+            _messageStateIncrease.Hide();
+            _messageTakenDiamonds.Hide();
+            _messageYouCheated.Hide();
 
             SizeChanged += (sender, args) =>
             {
@@ -115,6 +129,12 @@ namespace OnceUponATime_1
                     (ClientSize.Height - _messageLogicSchene.Size.Height) / 4);
                 _messageIntuitionalSchene.Location = new Point((ClientSize.Width - _messageIntuitionalSchene.Size.Width) / 2,
                     (ClientSize.Height - _messageIntuitionalSchene.Size.Height) / 4);
+                _messageStateIncrease.Location = new Point((ClientSize.Width - _messageStateIncrease.Size.Width) / 2,
+                    (ClientSize.Height - _messageStateIncrease.Size.Height) / 4);
+                _messageYouCheated.Location = new Point((ClientSize.Width - _messageYouCheated.Size.Width) / 2,
+                    (ClientSize.Height - _messageYouCheated.Height) / 4);
+                _messageTakenDiamonds.Location = new Point((ClientSize.Width - _messageTakenDiamonds.Size.Width) / 2,
+                    (ClientSize.Height - _messageTakenDiamonds.Size.Height) / 4 + (int)(1.5 * _messageTakenDiamonds.Height));
             };
         }
 
@@ -124,15 +144,25 @@ namespace OnceUponATime_1
             var graphics = e.Graphics;
             graphics.SmoothingMode = SmoothingMode.HighQuality;
 
-            var rectImage = new Rectangle(Width - 550, Height - 600, 500, 650);
+            var phraseSf = new StringFormat();
+            phraseSf.Alignment = StringAlignment.Near;
+            phraseSf.LineAlignment = StringAlignment.Near;
+
+            var indent = 10;
+            var rectForPhrase = new Rectangle(200, Height - 250, Width - 400, 200);
+
+            var rectImage = new Rectangle(rectForPhrase.X, Height - rectForPhrase.Height - 400, 300, 375);
             graphics.DrawImage(_states.States.Image, new Rectangle(_states.Location, _states.Size));
             if (!(_person is null))
                 graphics.DrawImage(_person, rectImage);
             else
-                rectImage.Width = 0;
+            {
+                phraseSf.Alignment = StringAlignment.Center;
+                phraseSf.LineAlignment = StringAlignment.Center;
+            }
+            if (_isPhrase)
+                graphics.DrawImage(Loader.LoadImagePng("game images", "next"), new Rectangle(Width - 100, Height - 80, 80, 60));
 
-            var indent = 10;
-            var rectForPhrase = new Rectangle(50, Height - 300, Width - rectImage.Width - 100, 250);
             var roundingValue = Height / 100F * _roundingPercent;
             var rectPathPhrase = Rounder.MakeRoundedRectangle(rectForPhrase, roundingValue);
 
@@ -149,7 +179,7 @@ namespace OnceUponATime_1
                 new SolidBrush(ForeColor), rectName, _nameSf);
             if (_isPhrase)
                 graphics.DrawString(_phrase, new Font("Palatino Linotype", 22),
-                    new SolidBrush(ForeColor), rectPhrase, _phraseSf);
+                    new SolidBrush(ForeColor), rectPhrase, phraseSf);
             else
             {
                 for (var i = 0; i < _choices.Length; i++)
@@ -171,12 +201,18 @@ namespace OnceUponATime_1
             }
 
             _game = game;
+            _screenForEnterName.StoryName = _game.StoryName;
             GetNextPhrase(new object(), new EventArgs());
             Click += GetNext;
+            
             _game.NameEntering += ShowEnteringScreen;
             _game.NoDiamonds += ShowMessageNoDiamonds;
             _game.SceneIsLogic += ShowMessageLogicShene;
             _game.SceneIsIntuitional += ShowMessageIntuitionalSchene;
+            _game.LogicIncrease += ShowMessageLogicIncrease;
+            _game.IntuitionalIncreased += ShowMessageIntuitionalIncrease;
+            _game.DiamondsTaken += ShowMessageDiamondsTaken;
+            _game.YouCheated += ShowMessageYouCheated;
             _screenForEnterName.ButtonPlay.Click += GetName;
             _menuButton.Click += ShowMenu;
             _menu.FirstButton.Click += Continue;
@@ -184,6 +220,32 @@ namespace OnceUponATime_1
             _menu.ThirdButton.Click += Exit;
             Diamonds.Text = game.Player.Diamonds.ToString();
             Keys.Text = game.Player.Keys.ToString();
+        }
+
+        private void ShowMessageYouCheated()
+        {
+            _messageYouCheated.Show();
+        }
+
+        private void ShowMessageDiamondsTaken(int delta)
+        {
+            _messageTakenDiamonds.Text = @$"Алмазы:   -{delta}";
+            Invalidate();
+            _messageTakenDiamonds.Show();
+        }
+
+        private void ShowMessageIntuitionalIncrease(int delta)
+        {
+            _messageStateIncrease.Text = @$"Интуиция:   +{delta}";
+            Invalidate();
+            _messageStateIncrease.Show();
+        }
+
+        private void ShowMessageLogicIncrease(int logicDelta)
+        {
+            _messageStateIncrease.Text = @$"Логика:   +{logicDelta}";
+            Invalidate();
+            _messageStateIncrease.Show();
         }
 
         private void ShowMessageIntuitionalSchene() => _messageIntuitionalSchene.Show();
@@ -216,6 +278,12 @@ namespace OnceUponATime_1
         {
             _messageLogicSchene.Hide();
             _messageIntuitionalSchene.Hide();
+            _messageYouCheated.Hide();
+            if (_isPhrase)
+            {
+                _messageStateIncrease.Hide();
+                _messageTakenDiamonds.Hide();
+            }
             var next = _game.GetNext();
             BackgroundImage = Loader.LoadImageJpg(_game.StoryName, _game.CurrentScene.Background);
             if (next is Phrase)

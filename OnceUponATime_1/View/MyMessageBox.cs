@@ -97,9 +97,15 @@ namespace OnceUponATime_1
             graphics.FillRectangle(new SolidBrush(BackColor), rect);
 
             var indent = 10;
-            var rectHead = new Rectangle(4 * indent, indent, Width - 8 * indent, 40);
+            var rectHead = new Rectangle(4 * indent, indent, Width - 8 * indent, 80);
             var rectText = new Rectangle(2 * indent, rectHead.Y + rectHead.Height + 2 * indent,
                 Width - 4 * indent, Height - rectHead.Height - 2 * indent);
+            if (_mainText != "")
+            {
+                rectHead = new Rectangle(4 * indent, indent, Width - 8 * indent, 40);
+                rectText = new Rectangle(2 * indent, rectHead.Y + rectHead.Height + 2 * indent,
+                    Width - 4 * indent, Height - rectHead.Height - 2 * indent);
+            }
             if (!(MainButton is null))
                 rectText = new Rectangle(2 * indent, rectHead.Y + rectHead.Height + 2 * indent,
                 Width - 4 * indent, Height - rectHead.Height - MainButton.Size.Height - 2 * indent);
