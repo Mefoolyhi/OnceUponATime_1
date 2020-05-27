@@ -149,10 +149,37 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameConfig.json" />
+    <Content Include="images\game images\exit.png" />
+    <Content Include="images\game images\flowers.png" />
+    <Content Include="images\game images\heart.ico" />
+    <Content Include="images\game images\heart.png" />
+    <Content Include="images\game images\hide.png" />
+    <Content Include="images\game images\left.png" />
+    <Content Include="images\game images\menu.png" />
+    <Content Include="images\game images\next.png" />
+    <Content Include="images\game images\right.png" />
+    <Content Include="images\game images\states.png" />
     <Content Include="images\Test\Jake.png" />
     <Content Include="images\Test\Olivia.png" />
     <Content Include="images\Test\Test.png" />
     <Content Include="images\Test\Tom.png" />
+    <Content Include="images\След в сердце\MainHero.png" />
+    <Content Include="images\След в сердце\Ведущий.png" />
+    <Content Include="images\След в сердце\Вики.png" />
+    <Content Include="images\След в сердце\ГУК.jpg" />
+    <Content Include="images\След в сердце\Дэн.png" />
+    <Content Include="images\След в сердце\ДимаС.png" />
+    <Content Include="images\След в сердце\Дом.jpg" />
+    <Content Include="images\След в сердце\Егор Павлов.png" />
+    <Content Include="images\След в сердце\Киря.png" />
+    <Content Include="images\След в сердце\Лина.png" />
+    <Content Include="images\След в сердце\Николя.png" />
+    <Content Include="images\След в сердце\Алексадр.png" />
+    <Content Include="images\След в сердце\След в сердце.png" />
+    <Content Include="images\След в сердце\Софа.png" />
+    <Content Include="images\След в сердце\Тим.png" />
+    <Content Include="images\След в сердце\Улица.jpg" />
+    <Content Include="images\След в сердце\Универ.jpg" />
     <Content Include="ReadMe.txt" />
     <Content Include="series\Test\1_1.json" />
     <Content Include="series\След в сердце\1_1.json" />
