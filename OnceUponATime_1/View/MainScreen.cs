@@ -16,6 +16,8 @@ namespace OnceUponATime_1
         private readonly MyMessageBox _messageYouGetGift;
         private readonly MyMessageBox _messageNotSpaceForKeys;
         private readonly MyMessageBox _messageNotKeys;
+        private bool _isBlock = false;
+        private bool _manyKeys = false;
         public MainScreen()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint
@@ -123,10 +125,13 @@ namespace OnceUponATime_1
             _rightButton.Click += RightButton_Click;
             _leftButton.Click += LeftButton_Click;
             _messageNoSerie.MainButton.Click += NoSerieButton_Click;
+            _messageNoSerie.ExitButton.Click += Unlock;
             _messageYouGetGift.MainButton.Click += GetGiftButton_Click;
             _messageYouGetGift.ExitButton.Click += GetGiftButton_Click;
             _messageNotSpaceForKeys.MainButton.Click += NoSpaceButton_Click;
+            _messageNotSpaceForKeys.ExitButton.Click += Unlock;
             _messageNotKeys.MainButton.Click += NoKeysButton_Click;
+            _messageNotKeys.ExitButton.Click += Unlock;
             game.NoSerie += ShowNoSerieMessage;
             game.GetGift += ShowGiftMessage;
             game.NoPlace += ShowNoPlaceMessage;
@@ -141,18 +146,29 @@ namespace OnceUponATime_1
             _rightButton.Hide();
         }
 
+        private void Unlock(object sender, EventArgs e)
+        {
+            _isBlock = false;
+        }
+
         private void RightButton_Click(object sender, EventArgs e)
         {
-            _game.GetNextStory();
-            _image.Image = Loader.LoadImagePng(_game.StoryName, _game.StoryName);
-            Invalidate();
+            if (!_isBlock)
+            {
+                _game.GetNextStory();
+                _image.Image = Loader.LoadImagePng(_game.StoryName, _game.StoryName);
+                Invalidate();
+            }
         }
 
         private void LeftButton_Click(object sender, EventArgs e)
         {
-            _game.GetPreviousStory();
-            _image.Image = Loader.LoadImagePng(_game.StoryName, _game.StoryName);
-            Invalidate();
+            if (!_isBlock)
+            {
+                _game.GetPreviousStory();
+                _image.Image = Loader.LoadImagePng(_game.StoryName, _game.StoryName);
+                Invalidate();
+            }
         }
 
         private void UpdateStates()
@@ -162,18 +178,53 @@ namespace OnceUponATime_1
             Invalidate();
         }
 
-        private void ShowNoPlaceMessage() => _messageNotSpaceForKeys.Show();
-        private void ShowGiftMessage() => _messageYouGetGift.Show();
-        private void ShowNoSerieMessage() => _messageNoSerie.Show();
-        private void ShowNoKeysMessage() => _messageNotKeys.Show();
-        private void NoSerieButton_Click(object sender, EventArgs e) => _messageNoSerie.Hide();
+        private void ShowNoPlaceMessage()
+        {
+            _messageNotSpaceForKeys.Show();
+            _isBlock = true;
+            _manyKeys = true;
+        }
+        private void ShowGiftMessage()
+        {
+            _messageYouGetGift.Show();
+            _isBlock = true;
+        }
+        private void ShowNoSerieMessage()
+        {
+            _messageNoSerie.Show();
+            _isBlock = true;
+        }
+        private void ShowNoKeysMessage()
+        {
+            _messageNotKeys.Show();
+            _isBlock = true;
+        }
+        private void NoSerieButton_Click(object sender, EventArgs e)
+        {
+            _messageNoSerie.Hide();
+            _isBlock = false;
+        }
         private void GetGiftButton_Click(object sender, EventArgs e)
         {
             _messageYouGetGift.Hide();
             UpdateStates();
+            if (!_manyKeys)
+                _isBlock = false;
         }
-        private void NoSpaceButton_Click(object sender, EventArgs e) => _messageNotSpaceForKeys.Hide();
-        private void NoKeysButton_Click(object sender, EventArgs e) => _messageNotKeys.Hide();
-        private void StartButton_Click(object sender, EventArgs e) => _game.PlayGame();
+        private void NoSpaceButton_Click(object sender, EventArgs e)
+        {
+            _messageNotSpaceForKeys.Hide();
+            _isBlock = false;
+        }
+        private void NoKeysButton_Click(object sender, EventArgs e)
+        {
+            _messageNotKeys.Hide();
+            _isBlock = false;
+        }
+        private void StartButton_Click(object sender, EventArgs e)
+        {
+            if (!_isBlock)
+                _game.PlayGame();
+        }
     }
 }

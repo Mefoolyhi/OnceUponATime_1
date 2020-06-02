@@ -29,6 +29,7 @@ namespace OnceUponATime_1
         private readonly MyMessageBox _messageTakenDiamonds;
         private readonly MyMessageBox _messageYouCheated;
         private readonly int _roundingPercent = 3;
+        private bool _isBlock = false;
 
         public GameScreen()
         {
@@ -253,7 +254,7 @@ namespace OnceUponATime_1
         private void ShowMessageNoDiamonds() => _messageNoDiamonds.Show();
         private void GetNext(object sender, EventArgs e)
         {
-            if (_isPhrase)
+            if (_isPhrase && !_isBlock)
                 GetNextPhrase(new object(), new EventArgs());
         }
         private void Exit(object sender, EventArgs e)
@@ -261,6 +262,7 @@ namespace OnceUponATime_1
             DeleteChoices();
             _game.ExitFromSerie();
             _menu.Hide();
+            _isBlock = false;
         }
 
         private void Restart(object sender, EventArgs e)
@@ -268,14 +270,25 @@ namespace OnceUponATime_1
             DeleteChoices();
             _game.RestartSerie();
             _menu.Hide();
+            _isBlock = false;
         }
 
-        private void Continue(object sender, EventArgs e) => _menu.Hide();
-        private void ShowMenu(object sender, EventArgs e) => _menu.Show();
+        private void Continue(object sender, EventArgs e)
+        {
+            _menu.Hide();
+            _isBlock = false;
+        }
+        private void ShowMenu(object sender, EventArgs e)
+        {
+            _menu.Show();
+            _isBlock = true;
+        }
         private void GetName(object sender, EventArgs e) => _game.SetName(_screenForEnterName.Name.Text);
         private void ShowEnteringScreen() => _screenForEnterName.Show();
         private void GetNextPhrase(object sender, EventArgs e)
         {
+            if (_isBlock)
+                return;
             _messageLogicSchene.Hide();
             _messageIntuitionalSchene.Hide();
             _messageYouCheated.Hide();
@@ -314,6 +327,7 @@ namespace OnceUponATime_1
                     Controls.Add(c);
                     c.Click += (object sender, EventArgs e) =>
                     {
+                        if (_isBlock) return;
                         _messageNoDiamonds.Hide();
                         if (_game.UpdateChoiceSuccess(Array.IndexOf(_choices, c)))
                             GetNextPhrase(new object(), new EventArgs());

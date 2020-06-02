@@ -13,6 +13,7 @@ namespace OnceUponATime_1
         private readonly EndScreen _endScreen;
         private readonly MyControlButton _menuButton;
         private readonly MyMenu _menu;
+        private bool _isBlock = false;
 
         public MyForm()
         {
@@ -95,8 +96,16 @@ namespace OnceUponATime_1
             set => base.Text = value;
         }
 
-        private void MenuButton_Click(object sender, EventArgs e) => _menu.Show();
-        private void ContinueButton_Click(object sender, EventArgs e) => _menu.Hide();
+        private void MenuButton_Click(object sender, EventArgs e)
+        {
+            _menu.Show();
+            _isBlock = true;
+        }
+        private void ContinueButton_Click(object sender, EventArgs e)
+        {
+            _menu.Hide();
+            _isBlock = false;
+        }
         private void HideButton_Click(object sender, EventArgs e) => WindowState = FormWindowState.Minimized;
 
         private void ExitButton_Click(object sender, EventArgs e)
